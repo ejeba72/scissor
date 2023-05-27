@@ -2,10 +2,10 @@
 
 import { Request, Response } from "express";
 
-function devController(req: Request, res: Response): void {
+function getReq(req: Request, res: Response): void {
     try {
-        console.log({ "messageToMary": "Take this message to Mary" });
-        res.status(200).send({ messageToMary: "Take this message to Mary" });
+        console.log({ "successfulGetReq": "A Get request was made to the '/dev' route." });
+        res.status(200).send({ getReqPayload: "Your test Get request is successful!" });
 
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -35,4 +35,4 @@ function postReq(req: Request, res: Response): void {
     }
 }
 
-export { devController, postReq };
+export { getReq, postReq };

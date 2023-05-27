@@ -1,11 +1,11 @@
 "use strict";
 // This controller is for development purpose only
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postReq = exports.devController = void 0;
-function devController(req, res) {
+exports.postReq = exports.getReq = void 0;
+function getReq(req, res) {
     try {
-        console.log({ "messageToMary": "Take this message to Mary" });
-        res.status(200).send({ messageToMary: "Take this message to Mary" });
+        console.log({ "successfulGetReq": "A Get request was made to the '/dev' route." });
+        res.status(200).send({ getReqPayload: "Your test Get request is successful!" });
     }
     catch (err) {
         if (err instanceof Error) {
@@ -18,7 +18,7 @@ function devController(req, res) {
         }
     }
 }
-exports.devController = devController;
+exports.getReq = getReq;
 function postReq(req, res) {
     try {
         const payload = req.body;

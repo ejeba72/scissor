@@ -9,6 +9,7 @@ const dev_route_1 = require("./routes/dev.route");
 (0, dotenv_1.config)();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT;
+const apiV1 = '/api/v1/';
 app.use(express_1.default.json());
 app.use('/dev', dev_route_1.devRoute); // for dev purpose only
 app.listen(PORT, () => {

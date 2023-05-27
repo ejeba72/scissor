@@ -6,6 +6,7 @@ config();
 
 const app: Application = express();
 const PORT: string | undefined = process.env.PORT;
+const apiV1: string = '/api/v1/';
 
 app.use(express.json());
 app.use('/dev', devRoute);  // for dev purpose only

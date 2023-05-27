@@ -6,5 +6,5 @@ const express_1 = require("express");
 const dev_controller_1 = require("../controllers/dev.controller");
 const router = (0, express_1.Router)();
 exports.devRoute = router;
-router.get('/', dev_controller_1.devController);
+router.get('/', dev_controller_1.getReq);
 router.post('/', dev_controller_1.postReq);
