@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { isUri } from "valid-url";
 import { generate } from "shortid";
 
+const baseUrl = `localhost:1111/`  // what about when you deploy it?
+
 // @route POST /api/v1
 // @desc create short url
 function createShortUrl(req: Request, res: Response): void {
@@ -10,6 +12,7 @@ function createShortUrl(req: Request, res: Response): void {
         if (isUri(longUrl)) {
             if (customUrl) {
                 const urlCode = customUrl;
+
                 console.log(urlCode);
                 res.status(201).send(urlCode);
             } else {

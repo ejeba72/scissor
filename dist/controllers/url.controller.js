@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createShortUrl = void 0;
 const valid_url_1 = require("valid-url");
 const shortid_1 = require("shortid");
+const baseUrl = `localhost:1111/`; // what about when you deploy it?
 // @route POST /api/v1
 // @desc create short url
 function createShortUrl(req, res) {
