@@ -1,39 +1,26 @@
 import { Request, Response } from "express";
 import { isUri } from "valid-url";
-// import validUrl from "valid-url";
-import {} from 'shortid';
+import { generate } from "shortid";
 
 // @route POST /api/v1
 // @desc create short url
 function createShortUrl(req: Request, res: Response): void {
     try {
-        const { longUrl } = req.body;
+        const { longUrl, customUrl } = req.body;
+        if (isUri(longUrl)) {
+            if (customUrl) {
+                const urlCode = customUrl;
+                console.log(urlCode);
+                res.status(201).send(urlCode);
+            } else {
+                const urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
+                console.log(urlCode);
+                res.status(201).send(urlCode);
+            }
+        } else {
+            res.status(404).send({errMsg: `Please enter a valid url.`});
+        }
 
-
-        let emma = isUri(longUrl);
-
-        // if (emma) {
-        //     console.log(`uri is valid`);
-        //     res.send(`url is valid`);
-        // } else {
-        //     console.log(`url is not valid o!`);
-        //     res.send(`url is not valid o!`);
-        // }
-
-        console.log(emma);
-        res.send(emma);
-
-        // if (isUri(longUrl)) {
-
-        // }
-
-        // switch (validUrl.isUri(longUrl)) {
-        //     case true:
-        // }
-
-        // console.log(longUrl);
-        // res.status(201).send(longUrl);
-        
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error(err.message);
