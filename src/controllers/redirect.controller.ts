@@ -1,12 +1,13 @@
 import { config } from "dotenv";
 import { Request, Response } from "express";
+import { UrlModel } from "../models/url.model";
 
 config();
 const PORT = process.env.PORT;
 
 // @route GET /:id
 // @desc redirects from short url to long url
-function redirect(req: Request, res: Response) {
+async function redirect(req: Request, res: Response): Promise<void>  {
     try {
         const { hostname, url } = req;
         const shortUrl = hostname + ':' + PORT + url;
@@ -15,12 +16,20 @@ function redirect(req: Request, res: Response) {
         // if true, redirect the long url in such document to the user with status code 302.
         // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
         
-        console.log(shortUrl);
-        res.send(shortUrl);
+        // console.log(shortUrl);
+        // res.send(shortUrl);
+
+        const urlDocument = await UrlModel.findOne({ shortUrl });
+
+        if (urlDocument) {
+            const longUrl = urlDocument.longUrl;
+            console.log('redirecting client to ' + longUrl);
+            res.status(200).redirect(longUrl);
+        } else {
+            console.log({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
+            res.status(404).send({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
+        }
     
-        // console.log(`redirect client`);
-        // // res.send(`you are been redirected`);
-        // res.status(302).redirect('http://github.com/ejeba72');
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.log(err.message);
