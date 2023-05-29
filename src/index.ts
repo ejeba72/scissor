@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 import { devRoute } from './routes/dev.route';
 import { urlRoute } from './routes/url.route';
 import { redirectRoute } from './routes/redirect.route';
-import { mongodb } from './db/connection.db';
+import { mongodb } from './db/connect.db';
 
 config();
 mongodb();

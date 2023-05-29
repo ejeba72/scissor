@@ -1,6 +1,6 @@
 // This controller is for development purpose only
 
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 function getReq(req: Request, res: Response): void {
     try {
