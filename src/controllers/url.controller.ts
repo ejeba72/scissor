@@ -11,28 +11,52 @@ const PORT: string | undefined = process.env.PORT;
 
 // @route POST /api/v1
 // @desc create short url
-function createShortUrl(req: Request, res: Response): void {
+async function createShortUrl(req: Request, res: Response): Promise<void> {
     try {
         const { longUrl, customUrl } = req.body;
         const { hostname } = req;
+        let shortUrl;
+
         if (isUri(longUrl)) {
+            const existingLongUrl = await UrlModel.findOne({ longUrl });
+            if (existingLongUrl) {
+                const resMsg = {
+                    msg: 'Hey, you previously created a short url for that link. Here it is:',
+                    longUrl: existingLongUrl.longUrl,
+                    shortUrl: existingLongUrl.shortUrl,
+                };
+                console.log(resMsg);
+                res.status(200).send(resMsg);
+                return;
+            }
             let urlCode;
             if (customUrl) {
                 urlCode = customUrl;
+                shortUrl = hostname + ':' + PORT + '/' + urlCode;
+                const existingShortUrl = await UrlModel.findOne({ shortUrl });
+                if (existingShortUrl) {
+                    const resMsg = {
+                        msg: 'Hey, that short url already exist. Here it is:',
+                        shortUrl: existingShortUrl.shortUrl,
+                        longUrl: existingShortUrl.longUrl,
+                    };
+                    console.log(resMsg);
+                    res.status(200).send(resMsg);
+                    return;
+                }
             } else {
                 urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
             }
-            const shortUrl = hostname + ':' + PORT + '/' + urlCode;
+            shortUrl = hostname + ':' + PORT + '/' + urlCode;
 
             const newShortUrl = new UrlModel({ shortUrl, longUrl });
-            newShortUrl.save();
-
+            await newShortUrl.save();
             console.log(newShortUrl);
             res.status(201).send(newShortUrl);
+            
         } else {
             res.status(404).send({errMsg: `Please enter a valid url.`});
         }
-
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error(err.message);
