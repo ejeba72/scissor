@@ -28,11 +28,11 @@ function createShortUrl(req, res) {
     catch (err) {
         if (err instanceof Error) {
             console.error(err.message);
-            res.send({ errMsg: `Internal Server Error` });
+            res.status(500).send({ errMsg: `Server Error` });
         }
         else {
             console.error(err);
-            res.send({ errMsg: `Internal Server Error` });
+            res.status(500).send({ errMsg: `Server Error` });
         }
     }
 }

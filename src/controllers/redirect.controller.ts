@@ -11,8 +11,8 @@ function redirect(req: Request, res: Response) {
         const { hostname, url } = req;
         const shortUrl = hostname + ':' + PORT + url;
         // check the db if there is any document that has the route of the incoming request.
-        // if false, return a 404 and "that short url doesn't exist, create a new short url for your the url you wish to shorten." message
-        // if true, redirect the long url in such document to the user.
+        // if true, redirect the long url in such document to the user with status code 302.
+        // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
         
         console.log(shortUrl);
         res.send(shortUrl);
@@ -23,10 +23,10 @@ function redirect(req: Request, res: Response) {
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.log(err.message);
-            res.send(err.message);
+            res.status(500).send({ errMsg: `Server Error` });
         } else {
             console.log(err);
-            res.send(err);
+            res.status(500).send({ errMsg: `Server Error` });
         }
     }
 }

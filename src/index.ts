@@ -3,8 +3,10 @@ import { config } from 'dotenv';
 import { devRoute } from './routes/dev.route';
 import { urlRoute } from './routes/url.route';
 import { redirectRoute } from './routes/redirect.route';
+import { mongodb } from './db/connection.db';
 
 config();
+mongodb();
 
 const app: Application = express();
 const PORT: string | undefined = process.env.PORT;
