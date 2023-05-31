@@ -1,10 +1,15 @@
-import { Schema, model } from "mongoose";
+import { Document, Model, Schema, model } from "mongoose";
 
-const urlSchema = new Schema({
+interface IUrl extends Document {
+    longUrl: 'string';
+    shortUrl: 'string';
+};
+
+const urlSchema: Schema<IUrl> = new Schema<IUrl>({
     longUrl: 'string',
     shortUrl: 'string',
-})
+});
 
-const UrlModel = model('Url', urlSchema);
+const UrlModel: Model<IUrl> = model<IUrl>('Url', urlSchema);
 
 export { UrlModel };

@@ -25,8 +25,6 @@ function redirect(req, res) {
             // check the db if there is any document that has the route (or shorturl) of the incoming request.
             // if true, redirect the long url in such document to the user with status code 302.
             // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
-            // console.log(shortUrl);
-            // res.send(shortUrl);
             const urlDocument = yield url_model_1.UrlModel.findOne({ shortUrl });
             if (urlDocument) {
                 const longUrl = urlDocument.longUrl;

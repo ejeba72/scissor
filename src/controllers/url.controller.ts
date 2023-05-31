@@ -11,7 +11,7 @@ const PORT: string | undefined = process.env.PORT;
 
 // @route POST /api/v1
 // @desc create short url
-async function createShortUrl(req: Request, res: Response): Promise<void> {
+async function postNewShortUrl(req: Request, res: Response): Promise<void> {
     try {
         const { longUrl, customUrl } = req.body;
         const { hostname } = req;
@@ -68,4 +68,8 @@ async function createShortUrl(req: Request, res: Response): Promise<void> {
     }
 }
 
-export { createShortUrl };
+// @route PUT /api/v1
+// @desc modify short or long field of url document
+async function modifyUrl(req: Request, res: Response): Promise<void> {}
+
+export { postNewShortUrl };

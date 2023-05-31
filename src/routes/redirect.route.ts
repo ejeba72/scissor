@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { redirect } from '../controllers/redirect.controller';
+import { getRedirect } from '../controllers/redirect.controller';
 
 const router = Router();
 
-router.get('/:code', redirect);
+router.get('/:code', getRedirect);
 
 export { router as redirectRoute };

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { createShortUrl } from "../controllers/url.controller";
+import { postNewShortUrl } from "../controllers/url.controller";
 
 
 const router = Router();
 
-router.post('/', createShortUrl);
+router.post('/', postNewShortUrl);
 
 export { router as urlRoute };

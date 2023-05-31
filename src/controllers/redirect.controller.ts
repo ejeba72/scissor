@@ -7,7 +7,7 @@ const PORT = process.env.PORT;
 
 // @route GET /:id
 // @desc redirects from short url to long url
-async function redirect(req: Request, res: Response): Promise<void>  {
+async function getRedirect(req: Request, res: Response): Promise<void>  {
     try {
         const { hostname, url } = req;
         const shortUrl = hostname + ':' + PORT + url;
@@ -16,9 +16,6 @@ async function redirect(req: Request, res: Response): Promise<void>  {
         // if true, redirect the long url in such document to the user with status code 302.
         // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
         
-        // console.log(shortUrl);
-        // res.send(shortUrl);
-
         const urlDocument = await UrlModel.findOne({ shortUrl });
 
         if (urlDocument) {
@@ -41,4 +38,4 @@ async function redirect(req: Request, res: Response): Promise<void>  {
     }
 }
 
-export { redirect };
+export { getRedirect };

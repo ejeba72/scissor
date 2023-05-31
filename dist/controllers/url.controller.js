@@ -79,3 +79,8 @@ function createShortUrl(req, res) {
     });
 }
 exports.createShortUrl = createShortUrl;
+// @route PUT /api/v1
+// @desc modify short or long field of url document
+function modifyUrl(req, res) {
+    return __awaiter(this, void 0, void 0, function* () { });
+}
