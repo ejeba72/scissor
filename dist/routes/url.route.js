@@ -5,4 +5,4 @@ const express_1 = require("express");
 const url_controller_1 = require("../controllers/url.controller");
 const router = (0, express_1.Router)();
 exports.urlRoute = router;
-router.post('/', url_controller_1.createShortUrl);
+router.post('/', url_controller_1.postNewShortUrl);

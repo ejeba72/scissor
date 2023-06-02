@@ -9,27 +9,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.redirect = void 0;
+exports.getRedirect = void 0;
 const dotenv_1 = require("dotenv");
 const url_model_1 = require("../models/url.model");
+const ioredis_1 = require("ioredis");
 (0, dotenv_1.config)();
 const PORT = process.env.PORT;
+const redis = new ioredis_1.Redis();
 // @route GET /:id
 // @desc redirects from short url to long url
-function redirect(req, res) {
+function getRedirect(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { hostname, url } = req;
             const shortUrl = hostname + ':' + PORT + url;
             // NOTE: TRANSFER THESE COMMENTS TO THE README/DOCUMENTATION
-            // check the db if there is any document that has the route (or shorturl) of the incoming request.
+            // check the cache if the route (or shorturl) of the incoming request is an existing key in the cache.
+            // if true, parse the value of such key, and use it as the argument for a res.redirect().
+            // otherwise, check the db if there is any document that has the route (or shorturl) of the incoming request.
             // if true, redirect the long url in such document to the user with status code 302.
             // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
+            let LongUrl = yield redis.get(shortUrl);
+            if (LongUrl) {
+                let cachedLongUrl = LongUrl;
+                cachedLongUrl = JSON.parse(cachedLongUrl);
+                console.log({ cachedLongUrl, 'source': 'cache' });
+                res.status(302).redirect(cachedLongUrl);
+                return;
+            }
             const urlDocument = yield url_model_1.UrlModel.findOne({ shortUrl });
             if (urlDocument) {
-                const longUrl = urlDocument.longUrl;
-                console.log('redirecting client to ' + longUrl);
-                res.status(200).redirect(longUrl);
+                const dbLongUrl = urlDocument.longUrl;
+                redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);
+                // console.log('redirecting client to ' + longUrl);
+                console.log({ dbLongUrl, 'source': 'database' });
+                res.status(302).redirect(dbLongUrl);
             }
             else {
                 console.log({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
@@ -48,4 +62,4 @@ function redirect(req, res) {
         }
     });
 }
-exports.redirect = redirect;
+exports.getRedirect = getRedirect;

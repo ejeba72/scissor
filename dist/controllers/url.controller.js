@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createShortUrl = void 0;
+exports.postNewShortUrl = void 0;
 const valid_url_1 = require("valid-url");
 const shortid_1 = require("shortid");
 const dotenv_1 = require("dotenv");
@@ -19,7 +19,7 @@ const url_model_1 = require("../models/url.model");
 const PORT = process.env.PORT;
 // @route POST /api/v1
 // @desc create short url
-function createShortUrl(req, res) {
+function postNewShortUrl(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { longUrl, customUrl } = req.body;
@@ -78,7 +78,7 @@ function createShortUrl(req, res) {
         }
     });
 }
-exports.createShortUrl = createShortUrl;
+exports.postNewShortUrl = postNewShortUrl;
 // @route PUT /api/v1
 // @desc modify short or long field of url document
 function modifyUrl(req, res) {
