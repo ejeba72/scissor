@@ -2,6 +2,7 @@ import { config } from 'dotenv';
 import { Request, Response } from 'express';
 import { UrlModel } from '../models/url.model';
 import { Redis } from 'ioredis';
+import { ZodString } from 'zod';
 
 config();
 const PORT = process.env.PORT;
@@ -34,7 +35,7 @@ async function getRedirect(req: Request, res: Response): Promise<void>  {
         const urlDocument = await UrlModel.findOne({ shortUrl });
 
         if (urlDocument) {
-            const dbLongUrl = urlDocument.longUrl;
+            const dbLongUrl = urlDocument.longUrl.toString();
             redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);
             console.log({ dbLongUrl, 'source' : 'database' });
             res.status(302).redirect(dbLongUrl);
