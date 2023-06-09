@@ -35,7 +35,7 @@ async function getRedirect(req: Request, res: Response): Promise<void>  {
         const urlDocument = await UrlModel.findOne({ shortUrl });
 
         if (urlDocument) {
-            const dbLongUrl = urlDocument.longUrl.toString();
+            const dbLongUrl = urlDocument.longUrl;
             redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);
             console.log({ dbLongUrl, 'source' : 'database' });
             res.status(302).redirect(dbLongUrl);
