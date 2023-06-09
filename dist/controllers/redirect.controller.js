@@ -24,10 +24,11 @@ function getRedirect(req, res) {
             const { hostname, url } = req;
             const shortUrl = hostname + ':' + PORT + url;
             // NOTE: TRANSFER THESE COMMENTS TO THE README/DOCUMENTATION
-            // check the cache if the route (or shorturl) of the incoming request is an existing key in the cache.
-            // if true, parse the value of such key, and use it as the argument for a res.redirect().
-            // otherwise, check the db if there is any document that has the route (or shorturl) of the incoming request.
-            // if true, redirect the long url in such document to the user with status code 302.
+            // Attempt to retrive... ...check the cache if the route (or shorturl) of the incoming request is an existing key in the cache.
+            // if true (i.e. if cache hit), parse the value of such key, and use it as the argument (ie longUrl) for a redirect.
+            // otherwise (ie if cache miss), ...attempt to retrieve... ...check the db if there is any document that has the route (or shorturl) of the incoming request.
+            // save such shortUrl and longUrl as key-value pairs in cache.
+            // use the longUrl to redirect the client with status code 302.
             // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
             let LongUrl = yield redis.get(shortUrl);
             if (LongUrl) {
@@ -41,7 +42,6 @@ function getRedirect(req, res) {
             if (urlDocument) {
                 const dbLongUrl = urlDocument.longUrl;
                 redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);
-                // console.log('redirecting client to ' + longUrl);
                 console.log({ dbLongUrl, 'source': 'database' });
                 res.status(302).redirect(dbLongUrl);
             }
