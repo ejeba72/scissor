@@ -1,45 +1,71 @@
 import { Document, Model, Schema, model } from "mongoose";
+import { z } from "zod";
+
+
+
+const ZUser = z.object({
+    firstName: z
+        .string({ required_error: 'First name is required' })
+        .max(50, 'First name must be 50 characters or less')
+        .trim(),
+    lastName: z
+        .string({ required_error: 'Last name is required' })
+        . max(50, 'Last name must be 50 characters or less')
+        .trim(),
+    email: z
+        .string({ required_error: 'Email is required' })
+        .trim()
+        .toLowerCase()
+        .email({ message: 'Email address is invalid' }),
+    username: z.string({ required_error: 'Username is required' }),
+    password: z.string({ required_error: 'Password is required' }),
+});
+
+type UserType = z.infer<typeof ZUser>;
+
+const userSchema: Schema<UserType> = new Schema<UserType>({
+    firstName: 'string',
+    lastName: 'string',
+    email: 'string',
+    username: 'string',
+    password: 'string',
+});
+
+const UserModel: Model<UserType> = model<UserType>('User', userSchema);
+
+export { UserModel, ZUser };
+
+
+
+
+
+
+
+
+
+
+
+// PREVIOUS FAILED ATTEMPTS
 
 // interface IUser extends Document {
 //     firstName: string;
 //     lastName: string;
-//     email: {
-//         type: string,
-//         unique: boolean,
-//     };
+//     email: string;
 //     username: string;
 //     password: string;
 // };
 
-// const userSchema = new Schema({
+// const userSchema: Schema<IUser> = new Schema<IUser>({
 //     firstName: 'string',
 //     lastName: 'string',
-//     email: {
-//         type: 'string',
-//         // unique: [ true, 'Email unavailable. Try another email'],
-//         unique: true,
-//     },
+//     email: 'string',
 //     username: 'string',
 //     password: 'string',
 // });
 
-const userSchema = new Schema({
-    firstName: String,
-    lastName: String,
-    email: {
-        type: String,
-        // unique: [ true, 'Email unavailable. Try another email'],
-        // unique: [true, 'Email unavailable'],
-        // unique: true,
-    },
-    username: String,
-    password: String,
-});
-
 // const UserModel: Model<IUser> = model<IUser>('User', userSchema);
-const UserModel = model('User', userSchema);
 
-export { UserModel };
+// export { UserModel };
 
 
 

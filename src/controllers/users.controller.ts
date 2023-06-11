@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { UserModel } from "../models/users.model";
+import { UserModel, ZUser } from "../models/users.model";
 import { z } from "zod";
-import { signupValidation } from "../validations/user.validation";
+// import { signupValidation } from "../validations/user.validation";
 
 
 
@@ -9,19 +9,7 @@ import { signupValidation } from "../validations/user.validation";
 async function signupLogic(req: Request, res: Response) {
 
     try {
-
-
-        // const reqBody = req.body;
-        // const newUser = new UserModel(req.body);
-        // console.log({newUser});
-        // const savedUser = await newUser.save();
-        // console.log({savedUser});
-        // // res.json({ reqBody, newUser, savedUser });
-        // res.json(savedUser);
-
-
-
-        const { parsedUser } = await signupValidation(req.body);
+        const parsedUser = ZUser.safeParse(req.body);
         const successStatus = parsedUser.success;
         if (!successStatus) {
             const errMsg = parsedUser.error.issues[0].message;
@@ -31,7 +19,7 @@ async function signupLogic(req: Request, res: Response) {
         }
         const existingUser = (await UserModel.findOne({ email: parsedUser.data.email }) || await UserModel.findOne({ username: parsedUser.data.username }));
         if (existingUser) {
-            console.log(existingUser);
+            console.log([`The following user already exist:`, existingUser]);
             res.status(400).json(`User already exists`);
             return;
         }
