@@ -18,18 +18,12 @@ function signupLogic(req, res) {
             const successStatus = parsedUser.success;
             if (!successStatus) {
                 const errMsg = parsedUser.error.issues[0].message;
-                console.log(errMsg);
-                res.status(400).json(errMsg);
-                return;
+                return res.status(400).json(errMsg);
             }
             const userExist = ((yield users_model_1.UserModel.findOne({ email: parsedUser.data.email })) || (yield users_model_1.UserModel.findOne({ username: parsedUser.data.username })));
             if (userExist) {
-                console.log([`The following user already exist:`, userExist]);
-                res.status(400).json(`User already exists`);
-                return;
+                return res.status(400).json(`User already exists`);
             }
-            console.log(parsedUser);
-            console.log(`signup request`);
             const signupData = parsedUser.data;
             const newUser = new users_model_1.UserModel(signupData);
             const savedUser = yield newUser.save();
@@ -38,8 +32,7 @@ function signupLogic(req, res) {
         catch (err) {
             if (err instanceof Error) {
                 console.log(err.message);
-                res.status(500).json(`Internal Server Error`);
-                return;
+                return res.status(500).json(`Internal Server Error`);
             }
             console.log(err);
             res.status(500).json(`Internal Server Error`);
@@ -51,28 +44,21 @@ function loginLogic(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { email, username, password } = req.body;
-            const userId = email || username;
             const userExist = (yield users_model_1.UserModel.find({ email }))[0] || (yield users_model_1.UserModel.find({ username }))[0]; // find({ email })[0] is the same as findOne({ email })
             if (!userExist) {
-                console.log(`Invalid email (or username) and password`);
-                res.status(400).json(`Invalid email (or username) and password`);
-                return;
+                return res.status(400).json(`Invalid email (or username) and password`);
             }
             const passwordFromClient = password;
             const passwordFromDb = userExist.password;
             if (passwordFromClient !== passwordFromDb) {
-                console.log(`Invalid email (or username) and password`);
-                res.status(400).json(`Invalid email (or username) and password`);
-                return;
+                return res.status(400).json(`Invalid email (or username) and password`);
             }
-            console.log(`logged in`);
             res.status(200).json(`logged in`);
         }
         catch (err) {
             if (err instanceof Error) {
                 console.error(err.message);
-                res.status(500).json(`Internal Server Error`);
-                return;
+                return res.status(500).json(`Internal Server Error`);
             }
             console.error(err);
             res.status(500).json(`Internal Server Error`);
