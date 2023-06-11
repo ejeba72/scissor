@@ -7,10 +7,10 @@ const userSchema = new mongoose_1.Schema({
     firstName: 'string',
     lastName: 'string',
     email: 'string',
-    userName: 'string',
+    username: 'string',
     password: 'string',
 });
-const UserModel = (0, mongoose_1.model)('Url', userSchema);
+const UserModel = (0, mongoose_1.model)('User', userSchema);
 exports.UserModel = UserModel;
 // import { Schema, model } from 'mongoose';
 // import { z } from 'zod';

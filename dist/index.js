@@ -21,5 +21,5 @@ app.use(`${apiV1}`, url_route_1.urlRoute);
 app.use(`/`, redirect_route_1.redirectRoute);
 app.use(`${apiV1}/user`, users_route_1.userRoute);
 app.listen(PORT, () => {
-    console.log(`App is attentively listening for incoming requests @ http://127.0.0.1:${PORT}`);
+    console.log(`Server is attentively listening for incoming requests @ http://127.0.0.1:${PORT}`);
 });
