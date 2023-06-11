@@ -2,18 +2,40 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
 const mongoose_1 = require("mongoose");
-;
+// interface IUser extends Document {
+//     firstName: string;
+//     lastName: string;
+//     email: {
+//         type: string,
+//         unique: boolean,
+//     };
+//     username: string;
+//     password: string;
+// };
+// const userSchema = new Schema({
+//     firstName: 'string',
+//     lastName: 'string',
+//     email: {
+//         type: 'string',
+//         // unique: [ true, 'Email unavailable. Try another email'],
+//         unique: true,
+//     },
+//     username: 'string',
+//     password: 'string',
+// });
 const userSchema = new mongoose_1.Schema({
-    firstName: 'string',
-    lastName: 'string',
+    firstName: String,
+    lastName: String,
     email: {
-        type: 'string',
+        type: String,
         // unique: [ true, 'Email unavailable. Try another email'],
-        unique: true,
+        // unique: [true, 'Email unavailable'],
+        // unique: true,
     },
-    username: 'string',
-    password: 'string',
+    username: String,
+    password: String,
 });
+// const UserModel: Model<IUser> = model<IUser>('User', userSchema);
 const UserModel = (0, mongoose_1.model)('User', userSchema);
 exports.UserModel = UserModel;
 // import { Schema, model } from 'mongoose';

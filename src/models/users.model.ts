@@ -1,26 +1,43 @@
 import { Document, Model, Schema, model } from "mongoose";
 
-interface IUser extends Document {
-    firstName: string;
-    lastName: string;
-    email: string;
-    username: string;
-    password: string;
-};
+// interface IUser extends Document {
+//     firstName: string;
+//     lastName: string;
+//     email: {
+//         type: string,
+//         unique: boolean,
+//     };
+//     username: string;
+//     password: string;
+// };
 
-const userSchema: Schema<IUser> = new Schema<IUser>({
-    firstName: 'string',
-    lastName: 'string',
+// const userSchema = new Schema({
+//     firstName: 'string',
+//     lastName: 'string',
+//     email: {
+//         type: 'string',
+//         // unique: [ true, 'Email unavailable. Try another email'],
+//         unique: true,
+//     },
+//     username: 'string',
+//     password: 'string',
+// });
+
+const userSchema = new Schema({
+    firstName: String,
+    lastName: String,
     email: {
-        type: 'string',
+        type: String,
         // unique: [ true, 'Email unavailable. Try another email'],
-        unique: true,
+        // unique: [true, 'Email unavailable'],
+        // unique: true,
     },
-    username: 'string',
-    password: 'string',
+    username: String,
+    password: String,
 });
 
-const UserModel: Model<IUser> = model<IUser>('User', userSchema);
+// const UserModel: Model<IUser> = model<IUser>('User', userSchema);
+const UserModel = model('User', userSchema);
 
 export { UserModel };
 

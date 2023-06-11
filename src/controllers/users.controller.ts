@@ -9,6 +9,18 @@ import { signupValidation } from "../validations/user.validation";
 async function signupLogic(req: Request, res: Response) {
 
     try {
+
+
+        // const reqBody = req.body;
+        // const newUser = new UserModel(req.body);
+        // console.log({newUser});
+        // const savedUser = await newUser.save();
+        // console.log({savedUser});
+        // // res.json({ reqBody, newUser, savedUser });
+        // res.json(savedUser);
+
+
+
         const { parsedUser } = await signupValidation(req.body);
         const successStatus = parsedUser.success;
         if (!successStatus) {
@@ -17,7 +29,12 @@ async function signupLogic(req: Request, res: Response) {
             res.status(400).json(errMsg);
             return;
         }
-
+        const existingUser = (await UserModel.findOne({ email: parsedUser.data.email }) || await UserModel.findOne({ username: parsedUser.data.username }));
+        if (existingUser) {
+            console.log(existingUser);
+            res.status(400).json(`User already exists`);
+            return;
+        }
         console.log(parsedUser);
         console.log(`signup request`);
         const signupData = parsedUser.data;
