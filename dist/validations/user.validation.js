@@ -14,17 +14,21 @@ const zod_1 = require("zod");
 function signupValidation(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const ZUser = zod_1.z.object({
-            firstName: zod_1.z.string(),
-            lastName: zod_1.z.string(),
-            email: zod_1.z.string({
-                required_error: 'email is required'
-            }),
-            username: zod_1.z.string({
-                required_error: 'Username is required'
-            }),
-            password: zod_1.z.string({
-                required_error: 'Password is required'
-            }),
+            firstName: zod_1.z
+                .string({ required_error: 'First name is required' })
+                .max(50, 'First name must be 50 characters or less')
+                .trim(),
+            lastName: zod_1.z
+                .string({ required_error: 'Last name is required' })
+                .max(50, 'Last name must be 50 characters or less')
+                .trim(),
+            email: zod_1.z
+                .string({ required_error: 'Email is required' })
+                .trim()
+                .toLowerCase()
+                .email({ message: 'Email address is invalid' }),
+            username: zod_1.z.string({ required_error: 'Username is required' }),
+            password: zod_1.z.string({ required_error: 'Password is required' }),
         });
         const parsedUser = yield ZUser.safeParseAsync(data);
         return { parsedUser };
