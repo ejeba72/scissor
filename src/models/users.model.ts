@@ -17,7 +17,10 @@ const ZUser = z.object({
         .trim()
         .toLowerCase()
         .email({ message: 'Email address is invalid' }),
-    username: z.string({ required_error: 'Username is required' }),
+    username: z
+        .string({ required_error: 'Username is required' })
+        .trim()
+        .toLowerCase(),
     password: z.string({ required_error: 'Password is required' }),
 });
 

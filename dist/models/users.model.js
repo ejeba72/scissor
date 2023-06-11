@@ -17,7 +17,10 @@ const ZUser = zod_1.z.object({
         .trim()
         .toLowerCase()
         .email({ message: 'Email address is invalid' }),
-    username: zod_1.z.string({ required_error: 'Username is required' }),
+    username: zod_1.z
+        .string({ required_error: 'Username is required' })
+        .trim()
+        .toLowerCase(),
     password: zod_1.z.string({ required_error: 'Password is required' }),
 });
 exports.ZUser = ZUser;

@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
 import { UserModel, ZUser } from "../models/users.model";
 import { z } from "zod";
-// import { signupValidation } from "../validations/user.validation";
-
-
-
 
 async function signupLogic(req: Request, res: Response) {
 
@@ -17,9 +13,9 @@ async function signupLogic(req: Request, res: Response) {
             res.status(400).json(errMsg);
             return;
         }
-        const existingUser = (await UserModel.findOne({ email: parsedUser.data.email }) || await UserModel.findOne({ username: parsedUser.data.username }));
-        if (existingUser) {
-            console.log([`The following user already exist:`, existingUser]);
+        const userExist = (await UserModel.findOne({ email: parsedUser.data.email }) || await UserModel.findOne({ username: parsedUser.data.username }));
+        if (userExist) {
+            console.log([`The following user already exist:`, userExist]);
             res.status(400).json(`User already exists`);
             return;
         }
@@ -41,9 +37,33 @@ async function signupLogic(req: Request, res: Response) {
 }
 
 async function loginLogic(req: Request, res: Response) {
-    // console.log(`login request`);
-    // res.json(`this is the login endpoint`);
-    try {} catch (err: unknown) {}
+    try {
+        const { email, username, password } = req.body;
+        const userId = email || username;
+        const userExist = (await UserModel.find({ email }))[0] || (await UserModel.find({ username }))[0]     // find({ email })[0] is the same as findOne({ email })
+        if (!userExist) {
+            console.log(`Invalid email (or username) and password`);
+            res.status(400).json(`Invalid email (or username) and password`);
+            return;
+        }
+        const passwordFromClient = password;
+        const passwordFromDb = userExist.password;
+        if (passwordFromClient !== passwordFromDb) {
+            console.log(`Invalid email (or username) and password`);
+            res.status(400).json(`Invalid email (or username) and password`);
+            return;
+        }
+        console.log(`logged in`);
+        res.status(200).json(`logged in`);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error(err.message);
+            res.status(500).json(`Internal Server Error`);
+            return;
+        }
+        console.error(err);
+        res.status(500).json(`Internal Server Error`);
+    }
 }
 
 async function logoutLogic(req: Request, res: Response) {

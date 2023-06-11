@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserLogic = exports.logoutLogic = exports.loginLogic = exports.signupLogic = void 0;
 const users_model_1 = require("../models/users.model");
-// import { signupValidation } from "../validations/user.validation";
 function signupLogic(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -23,9 +22,9 @@ function signupLogic(req, res) {
                 res.status(400).json(errMsg);
                 return;
             }
-            const existingUser = ((yield users_model_1.UserModel.findOne({ email: parsedUser.data.email })) || (yield users_model_1.UserModel.findOne({ username: parsedUser.data.username })));
-            if (existingUser) {
-                console.log([`The following user already exist:`, existingUser]);
+            const userExist = ((yield users_model_1.UserModel.findOne({ email: parsedUser.data.email })) || (yield users_model_1.UserModel.findOne({ username: parsedUser.data.username })));
+            if (userExist) {
+                console.log([`The following user already exist:`, userExist]);
                 res.status(400).json(`User already exists`);
                 return;
             }
@@ -50,10 +49,34 @@ function signupLogic(req, res) {
 exports.signupLogic = signupLogic;
 function loginLogic(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        // console.log(`login request`);
-        // res.json(`this is the login endpoint`);
-        try { }
-        catch (err) { }
+        try {
+            const { email, username, password } = req.body;
+            const userId = email || username;
+            const userExist = (yield users_model_1.UserModel.find({ email }))[0] || (yield users_model_1.UserModel.find({ username }))[0]; // find({ email })[0] is the same as findOne({ email })
+            if (!userExist) {
+                console.log(`Invalid email (or username) and password`);
+                res.status(400).json(`Invalid email (or username) and password`);
+                return;
+            }
+            const passwordFromClient = password;
+            const passwordFromDb = userExist.password;
+            if (passwordFromClient !== passwordFromDb) {
+                console.log(`Invalid email (or username) and password`);
+                res.status(400).json(`Invalid email (or username) and password`);
+                return;
+            }
+            console.log(`logged in`);
+            res.status(200).json(`logged in`);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                console.error(err.message);
+                res.status(500).json(`Internal Server Error`);
+                return;
+            }
+            console.error(err);
+            res.status(500).json(`Internal Server Error`);
+        }
     });
 }
 exports.loginLogic = loginLogic;
