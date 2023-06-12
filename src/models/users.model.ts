@@ -1,5 +1,5 @@
-import { genSalt, hash } from "bcrypt";
-import { Model, Schema, model } from "mongoose";
+import { compare, genSalt, hash } from "bcrypt";
+import { Document, Model, Schema, model } from "mongoose";
 import { z } from "zod";
 
 const ZUser = z.object({
@@ -25,7 +25,15 @@ const ZUser = z.object({
 
 type UserType = z.infer<typeof ZUser>;
 
-const userSchema: Schema<UserType> = new Schema<UserType>({
+interface IUser extends Document {
+    firstName: string;
+    lastName: string;
+    email: string;
+    username: string;
+    password: string;
+};
+
+const userSchema: Schema<IUser> = new Schema<IUser>({
     firstName: 'string',
     lastName: 'string',
     email: 'string',
@@ -39,7 +47,26 @@ userSchema.pre('save', async function (next) {
     next();
 })
 
-const UserModel: Model<UserType> = model<UserType>('User', userSchema);
+userSchema.methods.authenticateUser = async function(password: string) {
+    // Compare password received from client with password stored in DB.
+    const comparePasswords = await compare(password, this.password);
+    if (comparePasswords) return true;
+    return false;
+};
+
+// userSchema.statics.login = async function (email: string, username: string, password: string): Promise<IUser> {
+//     // 1. Find out if user exist in database.
+//     // 2. If so, compare password received from client with password stored in DB.
+//     const findWithEmail = (await this.find({ email }))[0];  // i.e. await this.findOne({ email })
+//     const findWithUsername = (await this.find({ username }))[0];
+//     const existingUser = findWithEmail || findWithUsername;
+//     if (!existingUser) throw Error('Invalid email (or username) and password');
+//     const comparePasswords = await compare(password, existingUser.password);
+//     if (!comparePasswords) throw Error('Invalid email (or username) and password');
+//     return existingUser;
+// };
+
+const UserModel: Model<IUser> = model<IUser>('User', userSchema);
 
 export { UserModel, ZUser };
 

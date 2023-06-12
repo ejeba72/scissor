@@ -34,6 +34,7 @@ const ZUser = zod_1.z.object({
     password: zod_1.z.string({ required_error: 'Password is required' }),
 });
 exports.ZUser = ZUser;
+;
 const userSchema = new mongoose_1.Schema({
     firstName: 'string',
     lastName: 'string',
@@ -48,6 +49,26 @@ userSchema.pre('save', function (next) {
         next();
     });
 });
+userSchema.methods.authenticateUser = function (password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Compare password received from client with password stored in DB.
+        const comparePasswords = yield (0, bcrypt_1.compare)(password, this.password);
+        if (comparePasswords)
+            return true;
+        return false;
+    });
+};
+// userSchema.statics.login = async function (email: string, username: string, password: string): Promise<IUser> {
+//     // 1. Find out if user exist in database.
+//     // 2. If so, compare password received from client with password stored in DB.
+//     const findWithEmail = (await this.find({ email }))[0];  // i.e. await this.findOne({ email })
+//     const findWithUsername = (await this.find({ username }))[0];
+//     const existingUser = findWithEmail || findWithUsername;
+//     if (!existingUser) throw Error('Invalid email (or username) and password');
+//     const comparePasswords = await compare(password, existingUser.password);
+//     if (!comparePasswords) throw Error('Invalid email (or username) and password');
+//     return existingUser;
+// };
 const UserModel = (0, mongoose_1.model)('User', userSchema);
 exports.UserModel = UserModel;
 // PREVIOUS FAILED ATTEMPTS
