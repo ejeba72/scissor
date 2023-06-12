@@ -1,7 +1,7 @@
 // This controller is for development purpose only
 
 import { Request, Response } from 'express';
-import { UserModel } from '../models/users.model';
+import { UserModel } from '../models/user.model';
 
 function getReq(req: Request, res: Response): void {
     try {

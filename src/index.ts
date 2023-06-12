@@ -4,7 +4,7 @@ import { devRoute } from './routes/dev.route';
 import { urlRoute } from './routes/url.route';
 import { redirectRoute } from './routes/redirect.route';
 import { mongodb } from './db/connect.db';
-import { userRoute } from './routes/users.route';
+import { userRoute } from './routes/user.route';
 
 config();
 mongodb();

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserModel, ZUser } from "../models/users.model";
+import { UserModel, ZUser } from "../models/user.model";
 import { config } from "dotenv";
 import { sign } from 'jsonwebtoken';
 
