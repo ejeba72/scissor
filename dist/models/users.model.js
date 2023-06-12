@@ -41,15 +41,15 @@ const userSchema = new mongoose_1.Schema({
     username: 'string',
     password: 'string',
 });
-const UserModel = (0, mongoose_1.model)('User', userSchema);
-exports.UserModel = UserModel;
 userSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const salt = yield (0, bcrypt_1.genSalt)();
-        const hashedPassword = yield (0, bcrypt_1.hash)(this.password, salt);
+        this.password = yield (0, bcrypt_1.hash)(this.password, salt);
         next();
     });
 });
+const UserModel = (0, mongoose_1.model)('User', userSchema);
+exports.UserModel = UserModel;
 // PREVIOUS FAILED ATTEMPTS
 // interface IUser extends Document {
 //     firstName: string;

@@ -1,5 +1,5 @@
 import { genSalt, hash } from "bcrypt";
-import { Document, Model, Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 import { z } from "zod";
 
 const ZUser = z.object({
@@ -33,13 +33,13 @@ const userSchema: Schema<UserType> = new Schema<UserType>({
     password: 'string',
 });
 
-const UserModel: Model<UserType> = model<UserType>('User', userSchema);
-
 userSchema.pre('save', async function (next) {
     const salt = await genSalt();
-    const hashedPassword = await hash(this.password, salt);
+    this.password = await hash(this.password, salt);
     next();
 })
+
+const UserModel: Model<UserType> = model<UserType>('User', userSchema);
 
 export { UserModel, ZUser };
 
