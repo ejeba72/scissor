@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserReq = exports.postReq = exports.getReq = void 0;
-const users_model_1 = require("../models/users.model");
+const user_model_1 = require("../models/user.model");
 function getReq(req, res) {
     try {
         console.log({ "successfulGetReq": "A Get request was made to the '/dev' route." });
@@ -59,7 +59,7 @@ function getUserReq(req, res) {
             const { email } = req.params;
             console.log({ reqParams: req.params });
             console.log({ email });
-            const user = (yield users_model_1.UserModel.find({ email }))[0];
+            const user = (yield user_model_1.UserModel.find({ email }))[0];
             // const user = users[0];
             // const user = await UserModel.find();
             // const user = await UserModel.findOne({ email });

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { UserModel, ZUser } from "../models/user.model";
+import { UserModel } from "../models/user.model";
+import { ZUser } from "../validations/user.validation";
 import { config } from "dotenv";
 import { sign } from 'jsonwebtoken';
 
@@ -54,16 +55,18 @@ async function loginLogic(req: Request, res: Response) {
 
         // const loginUser = await UserModel.login(email, username, password);
 
-        const findWithEmail = (await UserModel.find({ email }))[0];  // i.e. await UserModel.findOne({ email })
-        const findWithUsername = (await UserModel.find({ username }))[0];
-        const existingUser = findWithEmail || findWithUsername;
-        if (!existingUser) return res.status(400).json('Invalid email (or username) and password');
-        const isUserAuthenticated = await existingUser.authenticateUser(password);
-        console.log({ isUserAuthenticated });
-        if (!isUserAuthenticated) return res.status(400).json('Invalid email (or username) and password');
-        const jwtToken = createJwtToken(existingUser._id);
+        // const findWithEmail = (await UserModel.find({ email }))[0];  // i.e. await UserModel.findOne({ email })
+        // const findWithUsername = (await UserModel.find({ username }))[0];
+        // const existingUser = findWithEmail || findWithUsername;
+        // if (!existingUser) return res.status(400).json('Invalid email (or username) and password');
+        // const isUserAuthenticated = await existingUser.authenticateUser(password);
+        // console.log({ isUserAuthenticated });
+        // if (!isUserAuthenticated) return res.status(400).json('Invalid email (or username) and password');
+        
+        const authenticatedUser = await UserModel.authenticate(email, username, password);
+        const jwtToken = createJwtToken(authenticatedUser._id);
         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
-        const response = { existingUser, jwtToken };
+        const response = { authenticatedUser, jwtToken };
         res.status(200).json(response);
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -95,6 +98,41 @@ export { signupLogic, loginLogic, logoutLogic, deleteUserLogic };
 
 
 // // BEHIND THE SCENES
+/* ********************************************************************************* */
+// async function loginLogic(req: Request, res: Response) {
+//     try {
+//         const { email, username, password } = req.body;
+//         // const userExist = (await UserModel.find({ email }))[0] || (await UserModel.find({ username }))[0]     // find({ email })[0] is the same as findOne({ email })
+//         // if (!userExist) return res.status(400).json(`Invalid email (or username) and password`);
+//         // const passwordFromClient = password;
+//         // const passwordFromDb = userExist.password;
+//         // if (passwordFromClient !== passwordFromDb) return res.status(400).json(`Invalid email (or username) and password`);
+// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//         // const loginUser = await UserModel.login(email, username, password);
+
+//         const findWithEmail = (await UserModel.find({ email }))[0];  // i.e. await UserModel.findOne({ email })
+//         const findWithUsername = (await UserModel.find({ username }))[0];
+//         const existingUser = findWithEmail || findWithUsername;
+//         if (!existingUser) return res.status(400).json('Invalid email (or username) and password');
+//         const isUserAuthenticated = await existingUser.authenticateUser(password);
+//         console.log({ isUserAuthenticated });
+//         if (!isUserAuthenticated) return res.status(400).json('Invalid email (or username) and password');
+//         const jwtToken = createJwtToken(existingUser._id);
+//         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
+//         const response = { existingUser, jwtToken };
+//         res.status(200).json(response);
+//     } catch (err: unknown) {
+//         if (err instanceof Error) {
+//             console.error(err.message);
+//             return res.status(400).json(err.message);
+//         }
+//         console.error(err);
+//         res.status(400).json(err);
+//     }
+// }
+/* ********************************************************************************* */
+
 // async function loginLogic(req: Request, res: Response) {
 //     try {
 //         const { email, username, password } = req.body;
@@ -113,3 +151,4 @@ export { signupLogic, loginLogic, logoutLogic, deleteUserLogic };
 //         res.status(500).json(`Internal Server Error`);
 //     }
 // }
+/* ********************************************************************************* */
