@@ -14,21 +14,21 @@ const bcrypt_1 = require("bcrypt");
 const mongoose_1 = require("mongoose");
 ;
 ;
-const userSchema = new mongoose_1.Schema({
+const UserSchema = new mongoose_1.Schema({
     firstName: 'string',
     lastName: 'string',
     email: 'string',
     username: 'string',
     password: 'string',
-});
-userSchema.pre('save', function (next) {
+}, { timestamps: true });
+UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const salt = yield (0, bcrypt_1.genSalt)();
         this.password = yield (0, bcrypt_1.hash)(this.password, salt);
         next();
     });
 });
-userSchema.static('authenticate', function authenticate(email, username, password) {
+UserSchema.static('authenticate', function authenticate(email, username, password) {
     return __awaiter(this, void 0, void 0, function* () {
         // 1. Find out if user exist in database.
         // 2. If so, compare password received from client with password stored in DB.
@@ -43,7 +43,7 @@ userSchema.static('authenticate', function authenticate(email, username, passwor
         return existingUser;
     });
 });
-const UserModel = (0, mongoose_1.model)('User', userSchema);
+const UserModel = (0, mongoose_1.model)('UserDocument', UserSchema);
 exports.UserModel = UserModel;
 // PREVIOUS FAILED ATTEMPTS
 // import { compare, genSalt, hash } from "bcrypt";

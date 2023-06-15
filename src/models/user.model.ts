@@ -7,27 +7,32 @@ interface IUserSchema extends Document {
     email: string;
     username: string;
     password: string;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
 interface IUserModel extends Model<IUserSchema> {
     authenticate(email: string, username: string, password: string): Promise<IUserSchema>;
 };
 
-const userSchema: Schema<IUserSchema, IUserModel> = new Schema<IUserSchema, IUserModel>({
-    firstName: 'string',
-    lastName: 'string',
-    email: 'string',
-    username: 'string',
-    password: 'string',
-});
+const UserSchema: Schema<IUserSchema, IUserModel> = new Schema<IUserSchema, IUserModel>(
+    {
+        firstName: 'string',
+        lastName: 'string',
+        email: 'string',
+        username: 'string',
+        password: 'string',
+    },
+    { timestamps: true }
+);
 
-userSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function (next) {
     const salt = await genSalt();
     this.password = await hash(this.password, salt);
     next();
 });
 
-userSchema.static('authenticate', async function authenticate(email: string, username: string, password: string): Promise<IUserSchema> {
+UserSchema.static('authenticate', async function authenticate(email: string, username: string, password: string): Promise<IUserSchema> {
     // 1. Find out if user exist in database.
     // 2. If so, compare password received from client with password stored in DB.
     const findWithEmail = (await this.find({ email }))[0];  // i.e. await this.findOne({ email })
@@ -39,7 +44,7 @@ userSchema.static('authenticate', async function authenticate(email: string, use
     return existingUser;
 });
 
-const UserModel = model<IUserSchema, IUserModel>('User', userSchema);
+const UserModel = model<IUserSchema, IUserModel>('UserDocument', UserSchema);
 
 export { UserModel };
 
