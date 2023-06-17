@@ -16,8 +16,10 @@ const apiV1: string = '/api/v1';
 app.use(express.json());
 app.use(`${apiV1}/dev`, devRoute);  // for dev purpose only
 app.use(`${apiV1}`, urlRoute);
-app.use(`/`, redirectRoute);
+app.use(`/`, redirectRoute);    // both redirect endpoints and views endpoints share this route.
 app.use(`${apiV1}/user`, userRoute);
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
 
 app.listen(PORT, (): void => {
     console.log(`Server is attentively listening for incoming requests @ http://127.0.0.1:${PORT}`);
