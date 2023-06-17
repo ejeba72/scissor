@@ -4,6 +4,7 @@ import { generate } from 'shortid';
 import { config } from 'dotenv';
 import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
+import { qrGenerator } from '../utils/qrcode.util';
 
 // const baseUrl = `localhost:1111/`  // what about when you deploy it?
 
@@ -63,9 +64,11 @@ async function postNewShortUrl(req: Request, res: Response): Promise<any> {
             } else {
                 urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
             }
-            shortUrl = hostname + ':' + PORT + '/' + urlCode;
+            // shortUrl = hostname + ':' + PORT + '/' + urlCode;
+            shortUrl = req.protocol + '://' + req.get('host') + '/' + urlCode;
+            const qrcode = await qrGenerator(shortUrl);
 
-            const newShortUrl = new UrlModel({ shortUrl, longUrl });
+            const newShortUrl = new UrlModel({ shortUrl, qrcode, longUrl, });
             await newShortUrl.save();
             console.log(newShortUrl);
             res.status(201).send(newShortUrl);

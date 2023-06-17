@@ -6,6 +6,7 @@ const mongoose_1 = require("mongoose");
 const UrlSchema = new mongoose_1.Schema({
     longUrl: 'string',
     shortUrl: 'string',
+    qrcode: 'string',
     clicks: {
         type: Number,
         default: 0,

@@ -15,6 +15,7 @@ const shortid_1 = require("shortid");
 const dotenv_1 = require("dotenv");
 const url_model_1 = require("../models/url.model");
 const url_validation_1 = require("../validations/url.validation");
+const qrcode_util_1 = require("../utils/qrcode.util");
 // const baseUrl = `localhost:1111/`  // what about when you deploy it?
 (0, dotenv_1.config)();
 const PORT = process.env.PORT;
@@ -69,8 +70,10 @@ function postNewShortUrl(req, res) {
                 else {
                     urlCode = (0, shortid_1.generate)(); // @desc typical code generated: 5E7zAwSfG
                 }
-                shortUrl = hostname + ':' + PORT + '/' + urlCode;
-                const newShortUrl = new url_model_1.UrlModel({ shortUrl, longUrl });
+                // shortUrl = hostname + ':' + PORT + '/' + urlCode;
+                shortUrl = req.protocol + '://' + req.get('host') + '/' + urlCode;
+                const qrcode = yield (0, qrcode_util_1.qrGenerator)(shortUrl);
+                const newShortUrl = new url_model_1.UrlModel({ shortUrl, qrcode, longUrl, });
                 yield newShortUrl.save();
                 console.log(newShortUrl);
                 res.status(201).send(newShortUrl);
