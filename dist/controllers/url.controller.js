@@ -14,17 +14,30 @@ const valid_url_1 = require("valid-url");
 const shortid_1 = require("shortid");
 const dotenv_1 = require("dotenv");
 const url_model_1 = require("../models/url.model");
+const url_validation_1 = require("../validations/url.validation");
 // const baseUrl = `localhost:1111/`  // what about when you deploy it?
 (0, dotenv_1.config)();
 const PORT = process.env.PORT;
 // @route POST /api/v1
-// @desc create short url
+// @desc create short url  Response<any, Record<string, any>>
 function postNewShortUrl(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        // Unresolved Typescript Error Message: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
         try {
-            const { longUrl, customUrl } = req.body;
+            if (Object.keys(req.body).length === 0)
+                return res.status(400).json(`bad request`);
+            const validatedUrl = url_validation_1.ZUrlSchema.safeParse(req.body);
+            console.log({ reqBody: req.body });
+            console.log({ validatedUrl });
+            const successStatus = validatedUrl.success;
+            if (!successStatus) {
+                const errMsg = validatedUrl.error.issues[0].message;
+                return res.status(400).json(errMsg);
+            }
+            const { longUrl, customUrl } = validatedUrl.data;
             const { hostname } = req;
             let shortUrl;
+            console.log({ validatedUrl, longUrl, customUrl, shortUrl });
             if ((0, valid_url_1.isUri)(longUrl)) {
                 const existingLongUrl = yield url_model_1.UrlModel.findOne({ longUrl });
                 if (existingLongUrl) {

@@ -29,7 +29,7 @@ function signupLogic(req, res) {
         try {
             if (Object.keys(req.body).length === 0)
                 return res.status(400).json(`bad request`);
-            const validatedUser = user_validation_1.ZUser.safeParse(req.body);
+            const validatedUser = user_validation_1.ZUserSchema.safeParse(req.body);
             const successStatus = validatedUser.success;
             if (!successStatus) {
                 const errMsg = validatedUser.error.issues[0].message;

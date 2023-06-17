@@ -1,8 +1,15 @@
+import { timeStamp } from "console";
 import { Document, Model, Schema, model } from "mongoose";
 
 interface IUrlSchema extends Document {
     longUrl: 'string';
     shortUrl: 'string';
+    clicks: number;
+    clickDetails: {
+      timestamp: Date;
+      referrer: string;
+      userAgent: string;
+    }[];
     createdAt: Date;
     updatedAt: Date;
 };
@@ -11,6 +18,17 @@ const UrlSchema: Schema<IUrlSchema> = new Schema<IUrlSchema>(
     {
         longUrl: 'string',
         shortUrl: 'string',
+        clicks: {
+            type: Number,
+            default: 0,
+        },
+        clickDetails: [
+            {
+              timestamp: { type: Date, default: Date.now },
+              referrer: String,
+              userAgent: String,
+            },
+        ],
     },
     { timestamps: true }
 );
@@ -24,7 +42,7 @@ Scissor provides basic analytics that allow users to track their shortened URL's
 3. When a Url is used
 */
 
-const UrlModel: Model<IUrlSchema> = model<IUrlSchema>('UrlDocument', UrlSchema);
+const UrlModel: Model<IUrlSchema> = model<IUrlSchema>('Url', UrlSchema);
 
 export { UrlModel };
 

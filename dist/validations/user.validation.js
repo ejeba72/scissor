@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ZUser = void 0;
+exports.ZUserSchema = void 0;
 const zod_1 = require("zod");
-const ZUser = zod_1.z.object({
+const ZUserSchema = zod_1.z.object({
     firstName: zod_1.z
         .string({ required_error: 'First name is required' })
         .max(50, 'First name must be 50 characters or less')
@@ -22,4 +22,4 @@ const ZUser = zod_1.z.object({
         .toLowerCase(),
     password: zod_1.z.string({ required_error: 'Password is required' }),
 });
-exports.ZUser = ZUser;
+exports.ZUserSchema = ZUserSchema;

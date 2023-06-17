@@ -32,9 +32,7 @@ UserSchema.static('authenticate', function authenticate(email, username, passwor
     return __awaiter(this, void 0, void 0, function* () {
         // 1. Find out if user exist in database.
         // 2. If so, compare password received from client with password stored in DB.
-        const findWithEmail = (yield this.find({ email }))[0]; // i.e. await this.findOne({ email })
-        const findWithUsername = (yield this.find({ username }))[0];
-        const existingUser = findWithEmail || findWithUsername;
+        const existingUser = yield this.findOne({ $or: [{ email }, { username }] });
         if (!existingUser)
             throw Error('Invalid email (or username) and password');
         const comparePasswords = yield (0, bcrypt_1.compare)(password, existingUser.password);
@@ -43,9 +41,24 @@ UserSchema.static('authenticate', function authenticate(email, username, passwor
         return existingUser;
     });
 });
-const UserModel = (0, mongoose_1.model)('UserDocument', UserSchema);
+const UserModel = (0, mongoose_1.model)('User', UserSchema);
 exports.UserModel = UserModel;
-// PREVIOUS FAILED ATTEMPTS
+// BEHIND THE SCENES
+/* ******************************************************************************************* */
+// UserSchema.static('authenticate', async function authenticate(email: string, username: string, password: string): Promise<IUserSchema> {
+//     // 1. Find out if user exist in database.
+//     // 2. If so, compare password received from client with password stored in DB.
+//     // const findWithEmail = (await this.find({ email }))[0];  // i.e. await this.findOne({ email })
+//     // const findWithUsername = (await this.find({ username }))[0];
+//     // const existingUser = findWithEmail || findWithUsername;
+//     // const existingUser = await this.findOne({ $or: [{ email }, { username }] });
+//     const existingUser = (await this.find({ $or: [{ email }, { username }] }))[0];
+//     if (!existingUser) throw Error('Invalid email (or username) and password');
+//     const comparePasswords = await compare(password, existingUser.password);
+//     if (!comparePasswords) throw Error('Invalid email (or username) and password');
+//     return existingUser;
+// });
+/* ******************************************************************************************* */
 // import { compare, genSalt, hash } from "bcrypt";
 // import { Document, Model, Schema, model } from "mongoose";
 // interface IUser extends Document {

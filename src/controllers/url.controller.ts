@@ -3,6 +3,7 @@ import { isUri } from 'valid-url';
 import { generate } from 'shortid';
 import { config } from 'dotenv';
 import { UrlModel } from '../models/url.model';
+import { ZUrlSchema } from '../validations/url.validation';
 
 // const baseUrl = `localhost:1111/`  // what about when you deploy it?
 
@@ -10,12 +11,27 @@ config();
 const PORT: string | undefined = process.env.PORT;
 
 // @route POST /api/v1
-// @desc create short url
-async function postNewShortUrl(req: Request, res: Response): Promise<void> {
+// @desc create short url  Response<any, Record<string, any>>
+async function postNewShortUrl(req: Request, res: Response): Promise<any> {
+    // Unresolved Typescript Error Message: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
     try {
-        const { longUrl, customUrl } = req.body;
+        
+        if (Object.keys(req.body).length === 0) return res.status(400).json(`bad request`);
+        const validatedUrl = ZUrlSchema.safeParse(req.body);
+        console.log({ reqBody: req.body });
+        console.log({ validatedUrl });
+        const successStatus = validatedUrl.success;
+        if (!successStatus) {
+            const errMsg = validatedUrl.error.issues[0].message;
+            return res.status(400).json(errMsg);
+        }
+        const { longUrl, customUrl } = validatedUrl.data;
         const { hostname } = req;
         let shortUrl;
+
+
+        console.log({ validatedUrl, longUrl, customUrl, shortUrl });
+
 
         if (isUri(longUrl)) {
             const existingLongUrl = await UrlModel.findOne({ longUrl });

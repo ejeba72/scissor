@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/user.model";
-import { ZUser } from "../validations/user.validation";
+import { ZUserSchema } from "../validations/user.validation";
 import { config } from "dotenv";
 import { sign } from 'jsonwebtoken';
 
@@ -19,7 +19,7 @@ function createJwtToken(id: string): string {
 async function signupLogic(req: Request, res: Response) {
     try {
         if (Object.keys(req.body).length === 0) return res.status(400).json(`bad request`);
-        const validatedUser = ZUser.safeParse(req.body);
+        const validatedUser = ZUserSchema.safeParse(req.body);
         const successStatus = validatedUser.success;
         if (!successStatus) {
             const errMsg = validatedUser.error.issues[0].message;

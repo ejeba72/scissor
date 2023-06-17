@@ -6,6 +6,17 @@ const mongoose_1 = require("mongoose");
 const UrlSchema = new mongoose_1.Schema({
     longUrl: 'string',
     shortUrl: 'string',
+    clicks: {
+        type: Number,
+        default: 0,
+    },
+    clickDetails: [
+        {
+            timestamp: { type: Date, default: Date.now },
+            referrer: String,
+            userAgent: String,
+        },
+    ],
 }, { timestamps: true });
 /*
 - Analytics:
@@ -15,7 +26,7 @@ Scissor provides basic analytics that allow users to track their shortened URL's
 2. Sources of clicks
 3. When a Url is used
 */
-const UrlModel = (0, mongoose_1.model)('UrlDocument', UrlSchema);
+const UrlModel = (0, mongoose_1.model)('Url', UrlSchema);
 exports.UrlModel = UrlModel;
 // BEHIND THE SCENES:
 /* ********************************************************************************* */

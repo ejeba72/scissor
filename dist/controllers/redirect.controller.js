@@ -16,6 +16,7 @@ const ioredis_1 = require("ioredis");
 (0, dotenv_1.config)();
 const PORT = process.env.PORT;
 const redis = new ioredis_1.Redis();
+// console.log timestamp: new Date(), referrer: req.get('Referrer'), userAgent: req.get('User-Agent'), in the getRedirect route.
 // @route GET /:id
 // @desc redirects from short url to long url
 function getRedirect(req, res) {
@@ -23,6 +24,21 @@ function getRedirect(req, res) {
         try {
             const { hostname, url } = req;
             const shortUrl = hostname + ':' + PORT + url;
+            function analytics(doc) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    doc.clicks += 1;
+                    doc.clickDetails.push({
+                        timestamp: new Date(),
+                        referrer: req.headers.referer,
+                        userAgent: req.headers['user-agent'],
+                    });
+                    yield doc.save();
+                    // console.log({ clicks: doc.clicks, referrer: req.headers.referer });
+                    console.log(req.headers);
+                    // console.log({ clicks: doc.clicks, timestamp: doc.clickDetails.timestamp, referrer: doc.clickDetails.referer, userAgent: doc.clickDetails.userAgent, });
+                    // console.log({ clicks: doc.clicks, clickDetails: doc.clickDetails});
+                });
+            }
             // NOTE: TRANSFER THESE COMMENTS TO THE README/DOCUMENTATION
             // Attempt to retrive... ...check the cache if the route (or shorturl) of the incoming request is an existing key in the cache.
             // if true (i.e. if cache hit), parse the value of such key, and use it as the argument (ie longUrl) for a redirect.
@@ -36,6 +52,8 @@ function getRedirect(req, res) {
                 cachedLongUrl = JSON.parse(cachedLongUrl);
                 console.log({ cachedLongUrl, 'source': 'cache' });
                 res.status(302).redirect(cachedLongUrl);
+                const urlDocument = yield url_model_1.UrlModel.findOne({ shortUrl });
+                analytics(urlDocument);
                 return;
             }
             const urlDocument = yield url_model_1.UrlModel.findOne({ shortUrl });
@@ -44,6 +62,7 @@ function getRedirect(req, res) {
                 redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);
                 console.log({ dbLongUrl, 'source': 'database' });
                 res.status(302).redirect(dbLongUrl);
+                analytics(urlDocument);
             }
             else {
                 console.log({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
