@@ -1,5 +1,5 @@
-import { compare, genSalt, hash } from "bcrypt";
-import { Document, Model, Schema, model } from "mongoose";
+import { compare, genSalt, hash } from 'bcrypt';
+import { Document, Model, Schema, model } from 'mongoose';
 
 interface IUserSchema extends Document {
     firstName: string;

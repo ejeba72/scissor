@@ -16,9 +16,13 @@ function createJwtToken(id: string): string {
     throw Error('JWT_SECRET_KEY is undefined');
 }
 
-async function signupPage(req: Request, res: Response) {}
+function signupPage(req: Request, res: Response) {
+    res.render('signup');
+}
 
-async function loginPage(req: Request, res: Response) {}
+function loginPage(req: Request, res: Response) {
+    res.render('login');
+}
 
 async function signupLogic(req: Request, res: Response) {
     try {

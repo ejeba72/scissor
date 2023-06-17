@@ -3,10 +3,10 @@ import { deleteUserLogic, loginLogic, loginPage, logoutLogic, signupLogic, signu
 
 const router = Router();
 
-router.route('/signup').post(signupLogic).get(signupPage);
-router.route('/').post(loginLogic).get(loginPage);
-router.delete('/delete', deleteUserLogic);
+router.route('/').get(loginPage).post(loginLogic);
+router.route('/signup').get(signupPage).post(signupLogic);
 router.get('/logout', logoutLogic);
+router.delete('/delete', deleteUserLogic);
 // router.post('/login', loginLogic);
 
 export { router as userRoute };
