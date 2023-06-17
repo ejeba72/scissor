@@ -9,6 +9,9 @@ const redis = new Redis();
 
 // console.log timestamp: new Date(), referrer: req.get('Referrer'), userAgent: req.get('User-Agent'), in the getRedirect route.
 
+function homepage(req: Request, res: Response) { res.render('index') }
+function dashboard(req: Request, res: Response) { res.render('dashboard'); }
+
 // @route GET /:id
 // @desc redirects from short url to long url
 async function getRedirect(req: Request, res: Response): Promise<void>  {
@@ -74,4 +77,4 @@ async function getRedirect(req: Request, res: Response): Promise<void>  {
     }
 }
 
-export { getRedirect };
+export { getRedirect, homepage, dashboard, };

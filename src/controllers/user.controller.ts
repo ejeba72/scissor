@@ -16,6 +16,10 @@ function createJwtToken(id: string): string {
     throw Error('JWT_SECRET_KEY is undefined');
 }
 
+async function signupPage(req: Request, res: Response) {}
+
+async function loginPage(req: Request, res: Response) {}
+
 async function signupLogic(req: Request, res: Response) {
     try {
         if (Object.keys(req.body).length === 0) return res.status(400).json(`bad request`);
@@ -88,7 +92,7 @@ async function deleteUserLogic(req: Request, res: Response) {
     res.json(`this is the delete user endpoint`);
 }
 
-export { signupLogic, loginLogic, logoutLogic, deleteUserLogic };
+export { signupPage, loginPage, signupLogic, loginLogic, logoutLogic, deleteUserLogic, };
 
 
 

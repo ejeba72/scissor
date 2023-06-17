@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import { config } from 'dotenv';
 import { devRoute } from './routes/dev.route';
 import { urlRoute } from './routes/url.route';
-import { redirectRoute } from './routes/redirect.route';
+import { generalRoute } from './routes/general.route';
 import { mongodb } from './db/connect.db';
 import { userRoute } from './routes/user.route';
 
@@ -16,7 +16,7 @@ const apiV1: string = '/api/v1';
 app.use(express.json());
 app.use(`${apiV1}/dev`, devRoute);  // for dev purpose only
 app.use(`${apiV1}`, urlRoute);
-app.use(`/`, redirectRoute);    // both redirect endpoints and views endpoints share this route.
+app.use(`/`, generalRoute);
 app.use(`${apiV1}/user`, userRoute);
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
