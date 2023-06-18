@@ -17,11 +17,26 @@ interface IUserModel extends Model<IUserSchema> {
 
 const UserSchema: Schema<IUserSchema, IUserModel> = new Schema<IUserSchema, IUserModel>(
     {
-        firstName: 'string',
-        lastName: 'string',
-        email: 'string',
-        username: 'string',
-        password: 'string',
+        firstName: {
+            type: String,
+            required: true,
+        },
+        lastName: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+        },
+        username: {
+            type: String,
+            required: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
     },
     { timestamps: true }
 );

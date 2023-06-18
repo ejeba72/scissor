@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { deleteUserLogic, loginLogic, loginPage, logoutLogic, signupLogic, signupPage } from "../controllers/user.controller";
+import { deleteUserLogic, loginLogic, logoutLogic, signupLogic, } from "../controllers/user.controller";
 
 const router = Router();
 
-router.route('/').get(loginPage).post(loginLogic);
-router.route('/signup').get(signupPage).post(signupLogic);
+router.post('/', loginLogic);
+router.post('/signup', signupLogic);
 router.get('/logout', logoutLogic);
 router.delete('/delete', deleteUserLogic);
 // router.post('/login', loginLogic);

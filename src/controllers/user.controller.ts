@@ -16,14 +16,6 @@ function createJwtToken(id: string): string {
     throw Error('JWT_SECRET_KEY is undefined');
 }
 
-function signupPage(req: Request, res: Response) {
-    res.render('signup');
-}
-
-function loginPage(req: Request, res: Response) {
-    res.render('login');
-}
-
 async function signupLogic(req: Request, res: Response) {
     try {
         if (Object.keys(req.body).length === 0) return res.status(400).json({ errMsg: `bad request` });
@@ -33,15 +25,16 @@ async function signupLogic(req: Request, res: Response) {
             const errMsg = validatedUser.error.issues[0].message;
             return res.status(400).json({ errMsg });
         }
-        const userExist = (await UserModel.findOne({ email: validatedUser.data.email }) || await UserModel.findOne({ username: validatedUser.data.username }));
+        // const userExist = (await UserModel.findOne({ email: validatedUser.data.email }) || await UserModel.findOne({ username: validatedUser.data.username }));
+        const userExist = await UserModel.findOne({ $or: [{ email: validatedUser.data.email }, { username: validatedUser.data.username }] });
         if (userExist) return res.status(400).json({ errMsg: `User already exists` });
         const signupData = validatedUser.data;
         const newUser = new UserModel(signupData);
         const savedUser = await newUser.save();
         const jwtToken = createJwtToken(savedUser._id.toString());
-        res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
+        res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000, sameSite: "lax", secure: true, });
         console.log([ `signup post request`, { savedUser } ]);
-        res.status(201).json(savedUser);
+        res.status(201).json({ signup: true });
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.log(err.message);
@@ -74,7 +67,7 @@ async function loginLogic(req: Request, res: Response) {
         
         const authenticatedUser = await UserModel.authenticate(email, username, password);
         const jwtToken = createJwtToken(authenticatedUser._id);
-        res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
+        res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000, sameSite: "lax", secure: true, });
         const response = { authenticatedUser, jwtToken };
         console.log([ 'login post request', { response } ]);
         res.status(200).json(response);
@@ -98,7 +91,7 @@ async function deleteUserLogic(req: Request, res: Response) {
     res.json(`this is the delete user endpoint`);
 }
 
-export { signupPage, loginPage, signupLogic, loginLogic, logoutLogic, deleteUserLogic, };
+export { signupLogic, loginLogic, logoutLogic, deleteUserLogic, };
 
 
 
@@ -129,7 +122,7 @@ export { signupPage, loginPage, signupLogic, loginLogic, logoutLogic, deleteUser
 //         console.log({ isUserAuthenticated });
 //         if (!isUserAuthenticated) return res.status(400).json('Invalid email (or username) and password');
 //         const jwtToken = createJwtToken(existingUser._id);
-//         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
+//         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000, sameSite: "lax", secure: true, });
 //         const response = { existingUser, jwtToken };
 //         res.status(200).json(response);
 //     } catch (err: unknown) {
