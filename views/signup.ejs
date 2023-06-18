@@ -1,3 +1,60 @@
 <%-include('partials/header');-%>
-<h1>Signup Page</h1>
+<form>
+    <h2>Sign Up</h2>
+    <!-- first name -->
+    <label for="firstName">First Name</label>
+    <input type="text" name="firstName" required>
+    <div></div>
+    <!-- last name -->
+    <label for="lastName">Last Name</label>
+    <input type="text" name="lastName" required>
+    <div></div>
+    <!-- email -->
+    <label for="email">Email</label>
+    <input type="email" name="email" required>
+    <div></div>
+    <!-- username -->
+    <label for="username">Username</label>
+    <input type="text" name="username" required>
+    <div></div>
+    <!-- password -->
+    <label for="password">Password</label>
+    <input type="password" name="password" required>
+    <!-- error div -->
+    <div class="error"></div>
+    <!-- submit button -->
+    <button>Sign Up</button>
+</form>
+<script>
+    const form = document.querySelector('form');
+    const error = document.querySelector('.error');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        // reset error divs
+        error.textContent = '';
+        // form input is assigned to js variables
+        const firstName = form.firstName.value;
+        const lastName = form.lastName.value;
+        const email = form.email.value;
+        const username = form.username.value;
+        const password = form.password.value;
+        try {
+            const res = await fetch('/api/v1/user/signup', {
+                method: 'POST',
+                body: JSON.stringify({ firstName, lastName, email, username, password }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            // const data = await res.text();
+            console.log({data});
+            console.log({ errMsg: data.errMsg });
+            if (data.errMsg) {
+                error.textContent = data.errMsg;
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
+    })
+</script>
 <%-include('partials/footer');-%>

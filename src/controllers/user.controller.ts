@@ -9,7 +9,7 @@ config();
 const expiration: number = 60 * 60 * 24 * 3;
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
 function createJwtToken(id: string): string {
-    console.log({ id, JWT_SECRET_KEY, expiration });
+    console.log({ id, expiration });
     if (JWT_SECRET_KEY !== undefined) {
         return sign({ id }, JWT_SECRET_KEY, { expiresIn: expiration });
     }
@@ -26,28 +26,29 @@ function loginPage(req: Request, res: Response) {
 
 async function signupLogic(req: Request, res: Response) {
     try {
-        if (Object.keys(req.body).length === 0) return res.status(400).json(`bad request`);
+        if (Object.keys(req.body).length === 0) return res.status(400).json({ errMsg: `bad request` });
         const validatedUser = ZUserSchema.safeParse(req.body);
         const successStatus = validatedUser.success;
         if (!successStatus) {
             const errMsg = validatedUser.error.issues[0].message;
-            return res.status(400).json(errMsg);
+            return res.status(400).json({ errMsg });
         }
         const userExist = (await UserModel.findOne({ email: validatedUser.data.email }) || await UserModel.findOne({ username: validatedUser.data.username }));
-        if (userExist) return res.status(400).json(`User already exists`);
+        if (userExist) return res.status(400).json({ errMsg: `User already exists` });
         const signupData = validatedUser.data;
         const newUser = new UserModel(signupData);
         const savedUser = await newUser.save();
         const jwtToken = createJwtToken(savedUser._id.toString());
         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
+        console.log([ `signup post request`, { savedUser } ]);
         res.status(201).json(savedUser);
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.log(err.message);
-            return res.status(400).json(err.message);
+            return res.status(400).json({ errMsg: err.message });
         }
         console.log(err);
-        res.status(400).json(err);
+        res.status(400).json({ errMsg: err });
     }
 }
 
@@ -55,10 +56,10 @@ async function loginLogic(req: Request, res: Response) {
     try {
         const { email, username, password } = req.body;
         // const userExist = (await UserModel.find({ email }))[0] || (await UserModel.find({ username }))[0]     // find({ email })[0] is the same as findOne({ email })
-        // if (!userExist) return res.status(400).json(`Invalid email (or username) and password`);
+        // if (!userExist) return res.status(400).json({ errMsg: `Invalid email (or username) and password` });
         // const passwordFromClient = password;
         // const passwordFromDb = userExist.password;
-        // if (passwordFromClient !== passwordFromDb) return res.status(400).json(`Invalid email (or username) and password`);
+        // if (passwordFromClient !== passwordFromDb) return res.status(400).json({ errMsg: `Invalid email (or username) and password` });
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // const loginUser = await UserModel.login(email, username, password);
@@ -66,23 +67,24 @@ async function loginLogic(req: Request, res: Response) {
         // const findWithEmail = (await UserModel.find({ email }))[0];  // i.e. await UserModel.findOne({ email })
         // const findWithUsername = (await UserModel.find({ username }))[0];
         // const existingUser = findWithEmail || findWithUsername;
-        // if (!existingUser) return res.status(400).json('Invalid email (or username) and password');
+        // if (!existingUser) return res.status(400).json({ errMsg: `Invalid email (or username) and password` });
         // const isUserAuthenticated = await existingUser.authenticateUser(password);
         // console.log({ isUserAuthenticated });
-        // if (!isUserAuthenticated) return res.status(400).json('Invalid email (or username) and password');
+        // if (!isUserAuthenticated) return res.status(400).json({ errMsg: `Invalid email (or username) and password` });
         
         const authenticatedUser = await UserModel.authenticate(email, username, password);
         const jwtToken = createJwtToken(authenticatedUser._id);
         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000 });
         const response = { authenticatedUser, jwtToken };
+        console.log([ 'login post request', { response } ]);
         res.status(200).json(response);
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error(err.message);
-            return res.status(400).json(err.message);
+            return res.status(400).json({ errMsg: err.message });
         }
         console.error(err);
-        res.status(400).json(err);
+        res.status(400).json({ errMsg: err });
     }
 }
 
@@ -111,7 +113,7 @@ export { signupPage, loginPage, signupLogic, loginLogic, logoutLogic, deleteUser
 //     try {
 //         const { email, username, password } = req.body;
 //         // const userExist = (await UserModel.find({ email }))[0] || (await UserModel.find({ username }))[0]     // find({ email })[0] is the same as findOne({ email })
-//         // if (!userExist) return res.status(400).json(`Invalid email (or username) and password`);
+//         // if (!userExist) return res.status(400).json({ errMsg: `Invalid email (or username) and password` });
 //         // const passwordFromClient = password;
 //         // const passwordFromDb = userExist.password;
 //         // if (passwordFromClient !== passwordFromDb) return res.status(400).json(`Invalid email (or username) and password`);
