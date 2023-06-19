@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const ZUserSchema = z.object({
+const ZSignupSchema = z.object({
     firstName: z
         .string({ required_error: 'First name is required' })
         .max(50, 'First name must be 50 characters or less')
@@ -23,4 +23,4 @@ const ZUserSchema = z.object({
     .min(8, 'Password must be 8 or more characters '),
 });
 
-export { ZUserSchema };
+export { ZSignupSchema, };

@@ -1,38 +1,32 @@
 <%-include('partials/header');-%>
 <form>
-    <h2>Sign Up</h2>
+    <h2>Sign up</h2>
     <!-- first name -->
-    <label for="firstName">First Name</label>
-    <input type="text" name="firstName" required>
-    <div></div>
+    <label for="firstName">First Name</label> <br>
+    <input type="text" name="firstName" required>  <br><br>
     <!-- last name -->
-    <label for="lastName">Last Name</label>
-    <input type="text" name="lastName" required>
-    <div></div>
+    <label for="lastName">Last Name</label>  <br>
+    <input type="text" name="lastName" required>  <br><br>
     <!-- email -->
-    <label for="email">Email</label>
-    <input type="email" name="email" required>
-    <div></div>
+    <label for="email">Email</label>  <br>
+    <input type="email" name="email" required>  <br><br>
     <!-- username -->
-    <label for="username">Username</label>
-    <input type="text" name="username" required>
-    <div></div>
+    <label for="username">Username</label>  <br>
+    <input type="text" name="username" required>  <br><br>
     <!-- password -->
-    <label for="password">Password</label>
-    <input type="password" name="password" required>
+    <label for="password">Password</label>  <br>
+    <input type="password" name="password" required> <br><br>
     <!-- error div -->
     <div class="error"></div>
     <!-- submit button -->
-    <button>Sign Up</button>
+    <button>Sign up</button>
 </form>
 <script>
     const form = document.querySelector('form');
     const error = document.querySelector('.error');
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        // reset error div
-        error.textContent = '';
+        error.textContent = '';  // reset error div
         // form input is assigned to js variables
         const firstName = form.firstName.value;
         const lastName = form.lastName.value;
@@ -46,16 +40,10 @@
                 headers: { 'Content-Type': 'application/json' }
             });
             const data = await res.json();
-            // const data = await res.text();
             console.log({data});
             console.log({ errMsg: data.errMsg });
-            if (data.errMsg) {
-                error.textContent = data.errMsg;
-                return;
-            }
-            if (data.signup) {
-                location.assign('/scissor/success');
-            }
+            if (data.signup) return location.assign('/scissor/success');
+            error.textContent = data.errMsg;
         } catch (err) {
             console.log(err);
         }
