@@ -6,14 +6,14 @@ config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as Secret | GetPublicKeyOrSecret;
 
 function verifyJwtToken(req: Request, res: Response, next: NextFunction) {
-    const jwtToken = req.cookies.jwt;
-    if (!jwtToken) return res.status(401).json(`401 Unathorized. Login or signup to continue`); // Or res.redirect
+    const jwtToken = req.cookies?.jwt;
+    if (!jwtToken) return res.status(302).redirect('/scissor/');
     verify(jwtToken, JWT_SECRET_KEY, (err, verifiedToken) => {
         if (err) {
             console.log(err.message);
-            res.status(401).json(`401 Unathorized`);    // or res.redirect
+            res.status(302).redirect('/scissor');
         }
-        console.log(verifiedToken);
+        console.log({ jwtToken, verifiedToken, });
         next();
     });
 }
