@@ -60,8 +60,8 @@ async function loginLogic(req: Request, res: Response) {
     }
 }
 async function logoutLogic(req: Request, res: Response) {
-    console.log(`logout request`);
-    res.json(`this is the logout endpoint`);
+    res.clearCookie('jwt');
+    res.status(302).redirect('/');
 }
 async function deleteUserLogic(req: Request, res: Response) {
     console.log(`delete user request`);

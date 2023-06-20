@@ -6,6 +6,8 @@ import { urlRoute } from './routes/url.route';
 import { redirectRoute } from './routes/redirect.route';
 import { userRoute } from './routes/user.route';
 import { scissorRoute } from './routes/scissor.route';
+import cookieParser from 'cookie-parser';
+import { checkUser } from './middleware/auth.middleware';
 
 config();
 mongodb();
@@ -17,6 +19,8 @@ const apiV1: string = '/api/v1';
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
+app.use(cookieParser());
+app.get('*', checkUser);
 app.use(`/scissor`, scissorRoute);
 app.use(`${apiV1}`, urlRoute);
 app.use(`${apiV1}/dev`, devRoute);  // for dev purpose only
