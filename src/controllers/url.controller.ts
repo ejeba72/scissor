@@ -13,20 +13,24 @@ const PORT: string | undefined = process.env.PORT;
 
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>
-async function postNewShortUrl(req: Request, res: Response): Promise<any> {
+async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
     // Unresolved Typescript Error Message: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
     try {
         
-        if (Object.keys(req.body).length === 0) return res.status(400).json(`bad request`);
+        if (Object.keys(req.body).length === 0) return res.status(400).json({ errMsg: `bad request` });
         const validatedUrl = ZUrlSchema.safeParse(req.body);
+
+
         console.log({ reqBody: req.body });
         console.log({ validatedUrl });
+
+        
         const successStatus = validatedUrl.success;
         if (!successStatus) {
             const errMsg = validatedUrl.error.issues[0].message;
             return res.status(400).json(errMsg);
         }
-        const { longUrl, customUrl } = validatedUrl.data;
+        const { longUrl, customUrl, isQrCodeChecked } = validatedUrl.data;
         const { hostname } = req;
         let shortUrl;
 
@@ -38,9 +42,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<any> {
             const existingLongUrl = await UrlModel.findOne({ longUrl });
             if (existingLongUrl) {
                 const resMsg = {
-                    msg: 'Hey, you previously created a short url for that link. Here it is:',
-                    longUrl: existingLongUrl.longUrl,
-                    shortUrl: existingLongUrl.shortUrl,
+                    errMsg: `Hey, you previously created a short url for that link. Here it is: \nSHORT URL: ${existingLongUrl.shortUrl}, \nLONG URL: ${existingLongUrl.longUrl}`,
                 };
                 console.log(resMsg);
                 res.status(200).send(resMsg);
@@ -53,9 +55,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<any> {
                 const existingShortUrl = await UrlModel.findOne({ shortUrl });
                 if (existingShortUrl) {
                     const resMsg = {
-                        msg: 'Hey, that short url already exist. Here it is:',
-                        shortUrl: existingShortUrl.shortUrl,
-                        longUrl: existingShortUrl.longUrl,
+                        errMsg: `Hey, that short url already exist. Here it is: \nSHORT URL: ${existingShortUrl.shortUrl}, \nLONG URL: ${existingShortUrl.longUrl}`
                     };
                     console.log(resMsg);
                     res.status(200).send(resMsg);
@@ -66,15 +66,23 @@ async function postNewShortUrl(req: Request, res: Response): Promise<any> {
             }
             // shortUrl = hostname + ':' + PORT + '/' + urlCode;
             shortUrl = req.protocol + '://' + req.get('host') + '/' + urlCode;
-            const qrcode = await qrGenerator(shortUrl);
+
+            let qrcode;
+            if (isQrCodeChecked) {
+                qrcode = await qrGenerator(shortUrl);
+            }
 
             const newShortUrl = new UrlModel({ shortUrl, qrcode, longUrl, });
             await newShortUrl.save();
             console.log(newShortUrl);
-            res.status(201).send(newShortUrl);
+            // res.status(201).send(newShortUrl);
+            res.status(201).json({
+                shortUrlCreated: true,
+                newShortUrl
+            });
             
         } else {
-            res.status(404).send({errMsg: `Please enter a valid url.`});
+            res.status(404).send({errMsg: `Please enter a valid long url.`});
         }
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -86,9 +94,5 @@ async function postNewShortUrl(req: Request, res: Response): Promise<any> {
         }
     }
 }
-
-// @route PUT /api/v1
-// @desc modify short or long field of url document
-async function modifyUrl(req: Request, res: Response): Promise<void> {}
 
 export { postNewShortUrl };

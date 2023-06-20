@@ -2,6 +2,7 @@ import { optional, z } from "zod";
 
 const ZUrlSchema = z.object({
     longUrl: z.string({required_error: `Please enter the url you wish to shorten`}),
+    isQrCodeChecked: z.boolean(),
     customUrl: z.string().optional(),
     clicks: z.number().default(0).optional(),
     clickDetails: z.array(

@@ -59,8 +59,9 @@ async function getRedirect(req: Request, res: Response): Promise<void>  {
             res.status(302).redirect(dbLongUrl);
             analytics(urlDocument);
         } else {
-            console.log({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
-            res.status(404).send({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
+            // console.log({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
+            // res.status(404).send({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
+            res.status(404).render('404-page');
         }
     
     } catch (err: unknown) {

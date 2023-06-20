@@ -1,5 +1,50 @@
 <%-include('partials/header');-%>
 <main>
-    <h1>Welcome To The Dashboard</h1>
+    <h1>Welcome To Your Dashboard</h1>
+    <form>
+        <fieldset>
+            <legend>Create short url:</legend>
+            <!-- long url -->
+            <label for="longUrl">Long url:</label> <br>
+            <input type="text" name="longUrl" placeholder="Enter long url here"> <br><br>
+            <!-- custom url -->
+            <label for="customUrl">Custom url (optional):</label> <br>
+            <input type="text" name="customUrl" placeholder="Enter custom word here"> <br><br>
+            <!-- qrcode -->
+            <label for="qrcode">Check to generate QRCode:</label>
+            <input type="checkbox" name="qrcode"> <br><br>
+            <!-- response message from server -->
+            <div class="resMsg"></div>
+            <!-- submit button -->
+            <button>Create</button> <br>
+        </fieldset>
+    </form>
+    
+    <script>
+        const form = document.querySelector('form');
+        const resMsg = document.querySelector('.resMsg');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            resMsg.textContent = '';  // reset response message div
+            // form input is assigned to js variables
+            const longUrl = form.longUrl.value;
+            const customUrl = form.customUrl.value;
+            const isQrCodeChecked = form.qrcode.checked;
+            console.log({ isQrCodeChecked, customUrl, longUrl });
+            try {
+                const res = await fetch('/api/v1/', {
+                    method: 'POST',
+                    body: JSON.stringify({ longUrl, customUrl, isQrCodeChecked }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                console.log({data});
+                if (data.shortUrlCreated) return resMsg.textContent = data.newShortUrl;
+                resMsg.textContent = data.errMsg;
+            } catch (err) {
+                console.log(err);
+            }
+        })
+    </script>
 </main>
 <%-include('partials/footer');-%>
