@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
 import { qrGenerator } from '../utils/qrcode.util';
+import { AnalyticModel } from '../models/analytic.model';
 
 // const baseUrl = `localhost:1111/`  // what about when you deploy it?
 
@@ -94,7 +95,6 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
         }
     }
 }
-
 async function getLinkHistory(req: Request, res: Response) {
     try {
         const urlCollection = await UrlModel.find();
@@ -114,7 +114,26 @@ async function getLinkHistory(req: Request, res: Response) {
         res.status(500).render('500-page');
     }
 }
+async function getDashboard(req: Request, res: Response) {
+    try {
+        res.status(200).render('dashboard');
+    } catch (err) {
+        if (err instanceof Error) return console.log(err.message);
+        console.log(err);
+    }
+}
+async function postUrlAnalytics(req: Request, res: Response) {
+    try {
+        const shortUrl = req.body;
+        // await UrlModel.find({ shortUrl });
+        // await AnalyticModel.findOne({ shortUrl });
+        console.log(req.body);
+        res.status(200).render('dashboard', { reqBody: req.body });
+    } catch (err) {
+        res.status(500).render('500-page');
+        if (err instanceof Error) return console.log(err.message);
+        console.log(err);
+    }
+}
 
-// async function getAnalytics(req: Request, res: Response) {}
-
-export { postNewShortUrl, getLinkHistory };
+export { postNewShortUrl, getLinkHistory, getDashboard, postUrlAnalytics };

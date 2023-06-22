@@ -8,14 +8,6 @@ function homepage(req: Request, res: Response) {
         console.log(err);
     }
 }
-function dashboard(req: Request, res: Response) {
-    try {
-        res.status(200).render('dashboard');
-    } catch (err) {
-        if (err instanceof Error) return console.log(err.message);
-        console.log(err);
-    }
-}
 function success(req: Request, res: Response) {
     try {
         res.status(200).render('success');
@@ -47,4 +39,4 @@ function loginPage(req: Request, res: Response) {
     }
 }
 
-export { homepage, dashboard, success, errorPage, signupPage, loginPage, };
+export { homepage, success, errorPage, signupPage, loginPage, };

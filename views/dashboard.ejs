@@ -1,7 +1,7 @@
 <%-include('partials/header');-%>
 <main>
     <h1>Welcome To Your Dashboard</h1>
-    <form>
+    <form id="createUrlForm">
         <fieldset>
             <legend>Create short url:</legend>
             <!-- long url -->
@@ -32,25 +32,45 @@
         <tbody>
             <% linkHistory.forEach(element => { %>
                 <tr>
-                    <td></td>
+                    <td> <%= 1 + linkHistory.indexOf(element) %> </td>
                     <td> <%= element.shortUrl %> </td>
-                    <td></td>
+                    <td> <%= element.longUrl %> </td>
                 </tr>
             <% }) %>
 
         </tbody>
     </table>
+
+    <caption><h2>Url Analytics</h2></caption>
+    <form id="urlAnalyticsForm">
+        <label for="shortUrl">Enter the short url you wish to track:</label>
+        <input type="text" name="shortUrl" placeholder="Enter short url here">
+        <button>Track url</button>
+    </form>
+    <caption>Analytics for >%= shortUrl %<:</caption>
+    <table>
+        <thead>
+            <tr>
+                <th>Click Origin</th>
+                <th>Time Of Click</th>
+                <th>Number Of Clicks</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
     
     <script>
-        const form = document.querySelector('form');
+        const createUrlForm = document.querySelector('#createUrlForm');
         const resMsg = document.querySelector('.resMsg');
-        form.addEventListener('submit', async (e) => {
+        createUrlForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             resMsg.textContent = '';  // reset response message div
             // form input is assigned to js variables
-            const longUrl = form.longUrl.value;
-            const customUrl = form.customUrl.value;
-            const isQrCodeChecked = form.qrcode.checked;
+            const longUrl = createUrlForm.longUrl.value;
+            const customUrl = createUrlForm.customUrl.value;
+            const isQrCodeChecked = createUrlForm.qrcode.checked;
             console.log({ isQrCodeChecked, customUrl, longUrl });
             try {
                 const res = await fetch('/api/v1/', {
@@ -62,6 +82,25 @@
                 console.log({data});
                 if (data.shortUrlCreated) return resMsg.textContent = data.resMsg;
                 resMsg.textContent = data.errMsg;
+            } catch (err) {
+                console.log(err);
+            }
+        })
+
+        const urlAnalyticsForm =document.querySelector('#urlAnalyticsForm');
+        urlAnalyticsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const shortUrl = urlAnalyticsForm.shortUrl.value;
+            try {
+                const res = await fetch('/api/v1/dashboard', {
+                    method: 'POST',
+                    body: JSON.stringify({ shortUrl }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                console.log({data});
+                // if (data.shortUrlCreated) return resMsg.textContent = data.resMsg;
+                // resMsg.textContent = data.errMsg;
             } catch (err) {
                 console.log(err);
             }
