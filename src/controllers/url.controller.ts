@@ -78,7 +78,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             // res.status(201).send(newShortUrl);
             res.status(201).json({
                 shortUrlCreated: true,
-                newShortUrl
+                resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${qrcode || 'was not requested for'}, Long url: ${longUrl}.`
             });
             
         } else {
@@ -95,4 +95,26 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
     }
 }
 
-export { postNewShortUrl };
+async function getLinkHistory(req: Request, res: Response) {
+    try {
+        const urlCollection = await UrlModel.find();
+        const linkHistory = urlCollection.map((urlDoc) => {
+            return { shortUrl: urlDoc.shortUrl, longUrl: urlDoc.longUrl };
+        });
+        // res.status(200).json(linkHistory);
+        // res.status(200).render('dashboard', { linkHistory });
+        res.status(200).render('dashboard', { linkHistory });
+        console.log(linkHistory);
+    } catch (err: unknown) {
+        if (err instanceof Error) { 
+            console.log(err.message); 
+        } else {
+            console.log(err); 
+        }
+        res.status(500).render('500-page');
+    }
+}
+
+// async function getAnalytics(req: Request, res: Response) {}
+
+export { postNewShortUrl, getLinkHistory };
