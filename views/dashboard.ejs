@@ -30,9 +30,9 @@
             </tr>
         </thead>
         <tbody>
-            <% urlCollection.forEach(element => { %>
+            <% urlCollection.forEach((element, i) => { %>
                 <tr>
-                    <td> <%= 1 + urlCollection.indexOf(element) %> </td>
+                    <td> <%= 1 + i %> </td>
                     <td> <%= element.shortUrl %> </td>
                     <td> <%= element.longUrl %> </td>
                 </tr>
@@ -68,7 +68,7 @@
                 </tbody>
             </table>
 
-        </fieldset>
+        </fieldset> <br>
     <% } %>
     
     <script>

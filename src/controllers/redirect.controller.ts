@@ -65,14 +65,14 @@ async function getRedirect(req: Request, res: Response): Promise<void>  {
 
         if (urlDocument) {
             const dbLongUrl = urlDocument.longUrl;
-            redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);
+            redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 86400);
             console.log({ dbLongUrl, 'source' : 'database' });
             res.status(302).redirect(dbLongUrl);
             analytics(urlDocument);
         } else {
             // console.log({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
             // res.status(404).send({ resMsg: `That short url does not exist. Please confirm that it is correct. Or create a new one.` });
-            res.status(404).render('404-page');
+            res.status(404).render('short-url-error');
         }
     
     } catch (err: unknown) {

@@ -37,7 +37,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 
         console.log({ validatedUrl, longUrl, customUrl, shortUrl });
 
-
+        // LONG URL VALIDATION
         if (isUri(longUrl)) {
             const existingLongUrl = await UrlModel.findOne({ longUrl });
             if (existingLongUrl) {

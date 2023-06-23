@@ -8,6 +8,8 @@ import { userRoute } from './routes/user.route';
 import { scissorRoute } from './routes/scissor.route';
 import cookieParser from 'cookie-parser';
 import { checkUser } from './middleware/auth.middleware';
+import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 
 config();
 mongodb();
@@ -15,11 +17,18 @@ mongodb();
 const app: Application = express();
 const PORT: string | undefined = process.env.PORT;
 const apiV1: string = '/api/v1';
+const limiter = rateLimit({
+    windowMs: 60 * 1000,  // 1 minute window
+    max: 100,  // Each IP is limited to 100 requests per window period
+    message:  `The frequency of requests from this IP address is overwhelming! Please try again later.`
+})
 
 app.set('view engine', 'ejs');
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(limiter);
 app.get('*', checkUser);
 app.use(redirectRoute);
 app.use(`/scissor`, scissorRoute);
