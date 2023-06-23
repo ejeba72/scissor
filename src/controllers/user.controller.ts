@@ -33,12 +33,9 @@ async function signupLogic(req: Request, res: Response) {
         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000, sameSite: "lax", secure: true, });
         res.status(201).json({ signup: true });
     } catch (err: unknown) {
-        if (err instanceof Error) {
-            console.log(err.message);
-            return res.status(400).json({ errMsg: err.message });
-        }
+        res.status(500).render('500-page');
+        if (err instanceof Error) return console.log(err.message);
         console.log(err);
-        res.status(400).json({ errMsg: err });
     }
 }
 async function loginLogic(req: Request, res: Response) {
@@ -51,17 +48,14 @@ async function loginLogic(req: Request, res: Response) {
         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000, sameSite: "lax", secure: true, });
         res.status(200).json({ login: true });
     } catch (err: unknown) {
-        if (err instanceof Error) {
-            console.error(err.message);
-            return res.status(400).json({ errMsg: err.message });
-        }
-        console.error(err);
-        res.status(400).json({ errMsg: err });
+        res.status(500).render('500-page');
+        if (err instanceof Error) return console.log(err.message);
+        console.log(err);
     }
 }
 async function logoutLogic(req: Request, res: Response) {
     res.clearCookie('jwt');
-    res.status(302).redirect('/');
+    res.status(302).redirect('/scissor/homepage');
 }
 async function deleteUserLogic(req: Request, res: Response) {
     console.log(`delete user request`);
