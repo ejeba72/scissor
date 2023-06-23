@@ -27,9 +27,12 @@ function checkUser(req: Request, res: Response, next: NextFunction) {
         }
         if (typeof decodedToken === 'object' && decodedToken !== null && 'id' in decodedToken) {
             let user = await UserModel.findOne({ _id: (decodedToken as JwtPayload).id});
-            console.log({user, decodedToken, decodedTokenId: (decodedToken as JwtPayload)?.id});
             res.locals.user = user;
+
+            // console.log({user, decodedToken, decodedTokenId: (decodedToken as JwtPayload)?.id});
             // res.locals.user = `You are logged in as ${user}`;
+            
+            // NOTE:
             // I intentionally did not place a 'return' keyword here. Because the next() method needs to run, for both truthy and falsy conditions.
         }
         next();

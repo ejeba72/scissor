@@ -8,3 +8,12 @@ asyn function getRedirect(req, res) {
         // if false, return a 404 and the following message: "that short url doesn't exist, create a new short url for your the url you wish to shorten."
 }
 
+url.model.ts
+/*
+- Analytics:
+Scissor provides basic analytics that allow users to track their shortened URL's performance. Users can see how many clicks their shortened URL has received and where the clicks are coming from. We need to track when a URL is used.
+==> GOALS:
+1. Number of clicks
+2. Sources of clicks
+3. When a Url is used
+*/

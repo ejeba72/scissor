@@ -80,12 +80,12 @@
             // form input is assigned to js variables
             const longUrl = createUrlForm.longUrl.value;
             const customUrl = createUrlForm.customUrl.value;
-            const isQrCodeChecked = createUrlForm.qrcode.checked;
-            console.log({ isQrCodeChecked, customUrl, longUrl });
+            const qrcodeRequested = createUrlForm.qrcode.checked;
+            console.log({ qrcodeRequested, customUrl, longUrl });
             try {
                 const res = await fetch('/api/v1/', {
                     method: 'POST',
-                    body: JSON.stringify({ longUrl, customUrl, isQrCodeChecked }),
+                    body: JSON.stringify({ longUrl, customUrl, qrcodeRequested }),
                     headers: { 'Content-Type': 'application/json' }
                 });
                 const data = await res.json();

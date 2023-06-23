@@ -9,7 +9,7 @@ const expiration: number = 60 * 60 * 24 * 3;
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
 
 function createJwtToken(id: string): string {
-    console.log({ id, expiration });
+    // console.log({ id, expiration });
     if (JWT_SECRET_KEY !== undefined) {
         return sign({ id }, JWT_SECRET_KEY, { expiresIn: expiration });
     }
@@ -42,7 +42,7 @@ async function loginLogic(req: Request, res: Response) {
     try {
         if (Object.keys(req.body).length === 0) return res.status(400).json({ errMsg: `bad request` });
         const { emailOrUsername, password } = req.body;
-        console.log({ emailOrUsername, password })
+        // console.log({ emailOrUsername, password })
         const authenticatedUser = await UserModel.authenticate(emailOrUsername, password);
         const jwtToken = createJwtToken(authenticatedUser._id);
         res.cookie('jwt', jwtToken, { httpOnly: true, maxAge: expiration * 1000, sameSite: "lax", secure: true, });

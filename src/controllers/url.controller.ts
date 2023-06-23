@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
 import { qrGenerator } from '../utils/qrcode.util';
+import { join } from 'path';
 
 config();
 const PORT: string | undefined = process.env.PORT;
@@ -13,6 +14,9 @@ const PORT: string | undefined = process.env.PORT;
 // @desc create short url  Response<any, Record<string, any>>
 async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
     try {
+        
+        console.log({reqBody: req.body});
+
         if (Object.keys(req.body).length === 0) return res.status(400).json({ errMsg: `bad request` });
         const validatedUrl = ZUrlSchema.safeParse(req.body);
         const successStatus = validatedUrl.success;
@@ -20,9 +24,9 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             const errMsg = validatedUrl.error.issues[0].message;
             return res.status(400).json(errMsg);
         }
-        const { longUrl, customUrl, isQrCodeChecked } = validatedUrl.data;
-        const { hostname } = req;
-        let shortUrl;
+        const { longUrl, customUrl, qrcodeRequested } = validatedUrl.data;
+        // const { hostname } = req;
+        let shortUrl: string;
         // LONG URL VALIDATION:
         if (isUri(longUrl)) {
             const existingLongUrl = await UrlModel.findOne({ longUrl });
@@ -37,7 +41,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             let urlCode;
             if (customUrl) {
                 urlCode = customUrl;
-                shortUrl = hostname + ':' + PORT + '/' + urlCode;
+                shortUrl = req.get('host') + '/' + urlCode;
                 const existingShortUrl = await UrlModel.findOne({ shortUrl });
                 if (existingShortUrl) {
                     const resMsg = {
@@ -51,16 +55,33 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
             }
             shortUrl = req.get('host') + '/' + urlCode;
-            let qrcode;
-            if (isQrCodeChecked) {
-                qrcode = await qrGenerator(shortUrl);
+            console.log({shortUrl});
+
+            const qrcodeFileName = urlCode + '.png';
+            const qrcodeFilePath = join(__dirname, '..', '..', 'public', qrcodeFileName);
+            console.log({qrcodeFilePath});
+            let qrcodeFile;
+            console.log({qrcodeRequested});
+            if (qrcodeRequested) {
+                console.log({qrcodeRequested});
+                qrcodeFile = await qrGenerator(qrcodeFilePath, shortUrl);
             }
-            const newShortUrl = new UrlModel({ shortUrl, qrcode, longUrl, });
+            const newShortUrl = new UrlModel({ shortUrl, longUrl, qrcodeRequested, });
             await newShortUrl.save();
-            res.status(201).json({
-                shortUrlCreated: true,
-                resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${qrcode || 'was not requested for'}, Long url: ${longUrl}.`
-            });
+            console.log({ qrcodeFile, qrcodeFileName, qrcodeFilePath, newShortUrl, });
+
+            res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
+            res.status(201).sendFile(qrcodeFilePath);
+
+
+            // // Set response header for qrcode file:
+            // res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
+            // res.status(201).sendFile(qrcodeFilePath, () => {
+            //     res.json({
+            //         shortUrlCreated: true,
+            //         resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${'was generated' || 'was not requested for'}, Long url: ${longUrl}.`
+            //     });
+            // })
         } else {
             res.status(404).send({errMsg: `Please enter a valid long url.`});
         }
@@ -73,7 +94,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 async function getDashboard(req: Request, res: Response) {
     try {
         const urlCollection = await UrlModel.find();
-        console.log({urlCollection});
+        // console.log({urlCollection});
         res.status(200).render('dashboard', { urlCollection });
     } catch (err: unknown) {
         res.status(500).render('500-page');
@@ -82,6 +103,8 @@ async function getDashboard(req: Request, res: Response) {
     }
 }
 // update, deleteOne, deleteAll
+async function getUrl() {}
+async function getAllUrls() {}
 async function updateUrl() {}
 async function deleteUrl() {}
 async function deleteAllUrls() {}
