@@ -42,7 +42,7 @@
     </table>
 
     <caption><h2>Analytics:</h2></caption>
-    <% for( let i = 0; i < urlCollection.length; i++ ) { %>
+    <% for( let i = 0; i < urlCollection?.length; i++ ) { %>
         <fieldset>
             <legend>(<%= 1 + i %>). Details for: <%= urlCollection[i].shortUrl %>, Number of Clicks: <%= urlCollection[i].clicks %> </legend>
 
@@ -96,25 +96,6 @@
                 console.log(err);
             }
         })
-
-        // const urlAnalyticsForm =document.querySelector('#urlAnalyticsForm');
-        // urlAnalyticsForm.addEventListener('submit', async (e) => {
-        //     e.preventDefault();
-        //     const shortUrl = urlAnalyticsForm.shortUrl.value;
-        //     try {
-        //         const res = await fetch('/api/v1/dashboard', {
-        //             method: 'POST',
-        //             body: JSON.stringify({ shortUrl }),
-        //             headers: { 'Content-Type': 'application/json' }
-        //         });
-        //         const data = await res.json();
-        //         console.log({data});
-        //         // if (data.shortUrlCreated) return resMsg.textContent = data.resMsg;
-        //         // resMsg.textContent = data.errMsg;
-        //     } catch (err) {
-        //         console.log(err);
-        //     }
-        // })
     </script>
 </main>
 <%-include('partials/footer');-%>

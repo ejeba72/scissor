@@ -5,7 +5,6 @@ import { config } from 'dotenv';
 import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
 import { qrGenerator } from '../utils/qrcode.util';
-import { AnalyticModel } from '../models/analytic.model';
 
 // const baseUrl = `localhost:1111/`  // what about when you deploy it?
 
