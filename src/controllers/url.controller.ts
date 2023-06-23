@@ -66,7 +66,8 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
             }
             // shortUrl = hostname + ':' + PORT + '/' + urlCode;
-            shortUrl = req.protocol + '://' + req.get('host') + '/' + urlCode;
+            // shortUrl = req.protocol + '://' + req.get('host') + '/' + urlCode;
+            shortUrl = req.get('host') + '/' + urlCode;
 
             let qrcode;
             if (isQrCodeChecked) {
@@ -95,45 +96,29 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
         }
     }
 }
-async function getLinkHistory(req: Request, res: Response) {
-    try {
-        const urlCollection = await UrlModel.find();
-        const linkHistory = urlCollection.map((urlDoc) => {
-            return { shortUrl: urlDoc.shortUrl, longUrl: urlDoc.longUrl };
-        });
-        // res.status(200).json(linkHistory);
-        // res.status(200).render('dashboard', { linkHistory });
-        res.status(200).render('dashboard', { linkHistory });
-        console.log(linkHistory);
-    } catch (err: unknown) {
-        if (err instanceof Error) { 
-            console.log(err.message); 
-        } else {
-            console.log(err); 
-        }
-        res.status(500).render('500-page');
-    }
-}
 async function getDashboard(req: Request, res: Response) {
     try {
-        res.status(200).render('dashboard');
-    } catch (err) {
-        if (err instanceof Error) return console.log(err.message);
-        console.log(err);
-    }
-}
-async function postUrlAnalytics(req: Request, res: Response) {
-    try {
-        const shortUrl = req.body;
-        // await UrlModel.find({ shortUrl });
-        // await AnalyticModel.findOne({ shortUrl });
-        console.log(req.body);
-        res.status(200).render('dashboard', { reqBody: req.body });
-    } catch (err) {
+        const urlCollection = await UrlModel.find();
+        console.log({urlCollection});
+        res.status(200).render('dashboard', { urlCollection });
+    } catch (err: unknown) {
         res.status(500).render('500-page');
         if (err instanceof Error) return console.log(err.message);
-        console.log(err);
+        console.log(err); 
     }
 }
 
-export { postNewShortUrl, getLinkHistory, getDashboard, postUrlAnalytics };
+
+// async function getDashboard(req: Request, res: Response) {
+//     try {
+//         const urls = await UrlModel.find(); // Retrieve the data from MongoDB
+//         res.render('dashboard', { urls }); // Pass the data to your EJS template
+
+//     } catch (err) {
+//         res.status(500).json(`500 Internal Server Error`);
+//         if (err instanceof Error) return console.log(err.message);
+//         console.log(err);
+//     }
+// }
+
+export { postNewShortUrl, getDashboard, };

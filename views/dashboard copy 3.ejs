@@ -1,0 +1,33 @@
+<%-include('partials/header');-%>
+
+<table>
+    <thead>
+      <tr>
+        <th>Long URL</th>
+        <th>Short URL</th>
+        <th>Clicks</th>
+        <th>Click Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% urls.forEach(url => { %>
+        <tr>
+          <td><%= url.longUrl %></td>
+          <td><%= url.shortUrl %></td>
+          <td><%= url.clicks %></td>
+          <td>
+            <table>
+              <% url.clickDetails.forEach(click => { %>
+                <tr>
+                  <td><%= click.timestamp %></td>
+                  <td><%= click.userAgent %></td>
+                </tr>
+              <% }); %>
+            </table>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <%-include('partials/footer');-%>

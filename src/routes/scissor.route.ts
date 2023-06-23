@@ -3,11 +3,10 @@ import { errorPage, homepage, loginPage, signupPage, success } from "../controll
 import { verifyJwtToken } from "../middleware/auth.middleware";
 
 const router = Router();
-// router.get('/dashboard', verifyJwtToken, dashboard);
+router.get('/homepage', homepage);
 router.get('/success', success);
 router.get('/404-page', errorPage)
 router.get('/signup', signupPage);
-router.get('/', loginPage);
-// NOTE: Home page (index route) is located in redirect route.
+router.get('/login', loginPage);
 
 export { router as scissorRoute };

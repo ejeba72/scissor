@@ -57,12 +57,11 @@
                 </thead>
                 <tbody>
                     <% for( let j = 0; j < urlCollection?.clickDetails?.length; j++ ) { %>
-                        <h3> hello, world<%= console.log(urlCollection.clickDetails) %> </h3>
                         <tr>
                             <td><%= 1 + j %>. </td>
-                            <td><%= urlCollection.clickDetails[j].referrer %> </td>
-                            <td><%= urlCollection.clickDetails[j].userAgent %> </td>
-                            <td><%= urlCollection.clickDetails[j].timestamp %> </td>
+                            <td><%= urlCollection?.clickDetails[j]?.referrer %> </td>
+                            <td><%= urlCollection?.clickDetails[j]?.userAgent %> </td>
+                            <td><%= urlCollection?.clickDetails[j]?.timestamp %> </td>
                         </tr>
                     <% } %>
                 </tbody>

@@ -13,8 +13,13 @@ const redis = new Redis();
 // @desc redirects from short url to long url
 async function getRedirect(req: Request, res: Response): Promise<void>  {
     try {
-        const { hostname, url } = req;
-        const shortUrl = hostname + ':' + PORT + url;
+        // const { hostname, url } = req;
+        // const shortUrl = hostname + ':' + PORT + url;
+        // const shortUrl = 'http://' + hostname + ':' + PORT + url;
+        // shortUrl = req.get('host') + '/' + urlCode;
+        const { url } = req;
+        const shortUrl = req.get('host') + url;
+        console.log({shortUrl});
 
         async function analytics(doc: any): Promise<void> {
             doc.clicks += 1;
@@ -50,8 +55,14 @@ async function getRedirect(req: Request, res: Response): Promise<void>  {
             analytics(urlDocument);
             return;
         }
+
+        console.log({shortUrl});
         
         const urlDocument = await UrlModel.findOne({ shortUrl });
+
+        console.log(urlDocument);
+
+
         if (urlDocument) {
             const dbLongUrl = urlDocument.longUrl;
             redis.set(shortUrl, JSON.stringify(dbLongUrl), 'EX', 15);

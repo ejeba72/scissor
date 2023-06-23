@@ -42,34 +42,46 @@
     </table>
 
     <caption><h2>Analytics:</h2></caption>
-    <% for( let i = 0; i < urlCollection.length; i++ ) { %>
+    <% urlCollection.forEach(element => { %>
+     
         <fieldset>
-            <legend>(<%= 1 + i %>). Details for: <%= urlCollection[i].shortUrl %>, Number of Clicks: <%= urlCollection[i].clicks %> </legend>
+        <legend> ( <%= 1 + urlCollection.indexOf(element) %> ). Details for: <%= element.shortUrl %> , Number of Clicks: <%= element.clicks %>  </legend>
+            
+
 
             <table>
                 <thead>
-                    <tr>
-                        <th>S/N</th>
-                        <th>CLICK ORIGIN (Referrer)</th>
-                        <th>BROWSER (userAgent)</th>
-                        <th>TIME OF CLICK (timestamp)</th>
-                    </tr>
+                  <tr>
+                    <th>Long URL</th>
+                    <th>Short URL</th>
+                    <th>Clicks</th>
+                    <th>Click Details</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    <% for( let j = 0; j < urlCollection?.clickDetails?.length; j++ ) { %>
-                        <h3> hello, world<%= console.log(urlCollection.clickDetails) %> </h3>
-                        <tr>
-                            <td><%= 1 + j %>. </td>
-                            <td><%= urlCollection.clickDetails[j].referrer %> </td>
-                            <td><%= urlCollection.clickDetails[j].userAgent %> </td>
-                            <td><%= urlCollection.clickDetails[j].timestamp %> </td>
-                        </tr>
-                    <% } %>
+                  <% urlCollection.forEach(urlDoc => { %>
+                    <tr>
+                      <td><%= urlDoc.longUrl %></td>
+                      <td><%= urlDoc.shortUrl %></td>
+                      <td><%= urlDoc.clicks %></td>
+                      <td>
+                        <table>
+                          <% urlDoc.clickDetails.forEach(click => { %>
+                            <tr>
+                              <td><%= click.timestamp %></td>
+                              <td><%= click.userAgent %></td>
+                              <td><%= click.referrer  %> </td>
+                            </tr>
+                          <% }); %>
+                        </table>
+                      </td>
+                    </tr>
+                  <% }); %>
                 </tbody>
-            </table>
-
+              </table>
         </fieldset>
-    <% } %>
+
+    <% }) %>
     
     <script>
         const createUrlForm = document.querySelector('#createUrlForm');

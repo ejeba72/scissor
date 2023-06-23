@@ -30,9 +30,9 @@
             </tr>
         </thead>
         <tbody>
-            <% urlCollection.forEach(element => { %>
+            <% linkHistory.forEach(element => { %>
                 <tr>
-                    <td> <%= 1 + urlCollection.indexOf(element) %> </td>
+                    <td> <%= 1 + linkHistory.indexOf(element) %> </td>
                     <td> <%= element.shortUrl %> </td>
                     <td> <%= element.longUrl %> </td>
                 </tr>
@@ -41,35 +41,25 @@
         </tbody>
     </table>
 
-    <caption><h2>Analytics:</h2></caption>
-    <% for( let i = 0; i < urlCollection.length; i++ ) { %>
-        <fieldset>
-            <legend>(<%= 1 + i %>). Details for: <%= urlCollection[i].shortUrl %>, Number of Clicks: <%= urlCollection[i].clicks %> </legend>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>S/N</th>
-                        <th>CLICK ORIGIN (Referrer)</th>
-                        <th>BROWSER (userAgent)</th>
-                        <th>TIME OF CLICK (timestamp)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for( let j = 0; j < urlCollection?.clickDetails?.length; j++ ) { %>
-                        <h3> hello, world<%= console.log(urlCollection.clickDetails) %> </h3>
-                        <tr>
-                            <td><%= 1 + j %>. </td>
-                            <td><%= urlCollection.clickDetails[j].referrer %> </td>
-                            <td><%= urlCollection.clickDetails[j].userAgent %> </td>
-                            <td><%= urlCollection.clickDetails[j].timestamp %> </td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
-
-        </fieldset>
-    <% } %>
+    <caption><h2>Url Analytics</h2></caption>
+    <form id="urlAnalyticsForm">
+        <label for="shortUrl">Enter the short url you wish to track:</label>
+        <input type="text" name="shortUrl" placeholder="Enter short url here">
+        <button>Track url</button>
+    </form>
+    <caption>Analytics for >%= shortUrl %<:</caption>
+    <table>
+        <thead>
+            <tr>
+                <th>Click Origin</th>
+                <th>Time Of Click</th>
+                <th>Number Of Clicks</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
     
     <script>
         const createUrlForm = document.querySelector('#createUrlForm');
@@ -97,24 +87,24 @@
             }
         })
 
-        // const urlAnalyticsForm =document.querySelector('#urlAnalyticsForm');
-        // urlAnalyticsForm.addEventListener('submit', async (e) => {
-        //     e.preventDefault();
-        //     const shortUrl = urlAnalyticsForm.shortUrl.value;
-        //     try {
-        //         const res = await fetch('/api/v1/dashboard', {
-        //             method: 'POST',
-        //             body: JSON.stringify({ shortUrl }),
-        //             headers: { 'Content-Type': 'application/json' }
-        //         });
-        //         const data = await res.json();
-        //         console.log({data});
-        //         // if (data.shortUrlCreated) return resMsg.textContent = data.resMsg;
-        //         // resMsg.textContent = data.errMsg;
-        //     } catch (err) {
-        //         console.log(err);
-        //     }
-        // })
+        const urlAnalyticsForm =document.querySelector('#urlAnalyticsForm');
+        urlAnalyticsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const shortUrl = urlAnalyticsForm.shortUrl.value;
+            try {
+                const res = await fetch('/api/v1/dashboard', {
+                    method: 'POST',
+                    body: JSON.stringify({ shortUrl }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                console.log({data});
+                // if (data.shortUrlCreated) return resMsg.textContent = data.resMsg;
+                // resMsg.textContent = data.errMsg;
+            } catch (err) {
+                console.log(err);
+            }
+        })
     </script>
 </main>
 <%-include('partials/footer');-%>

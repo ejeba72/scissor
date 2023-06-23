@@ -30,9 +30,9 @@
             </tr>
         </thead>
         <tbody>
-            <% urlCollection.forEach(element => { %>
+            <% linkHistory.forEach(element => { %>
                 <tr>
-                    <td> <%= 1 + urlCollection.indexOf(element) %> </td>
+                    <td> <%= 1 + linkHistory.indexOf(element) %> </td>
                     <td> <%= element.shortUrl %> </td>
                     <td> <%= element.longUrl %> </td>
                 </tr>
@@ -42,10 +42,10 @@
     </table>
 
     <caption><h2>Analytics:</h2></caption>
-    <% for( let i = 0; i < urlCollection.length; i++ ) { %>
+    <% analytics.forEach(element => { %>
+     
         <fieldset>
-            <legend>(<%= 1 + i %>). Details for: <%= urlCollection[i].shortUrl %>, Number of Clicks: <%= urlCollection[i].clicks %> </legend>
-
+        <legend> ( <%= 1 + analytics.indexOf(element) %> ). Details for: <%= element.shortUrl %> , Number of Clicks: <%= element.clicks %>  </legend>
             <table>
                 <thead>
                     <tr>
@@ -56,20 +56,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for( let j = 0; j < urlCollection?.clickDetails?.length; j++ ) { %>
-                        <h3> hello, world<%= console.log(urlCollection.clickDetails) %> </h3>
+                    >% analytics.clickDetails.forEach(element => { %>
                         <tr>
-                            <td><%= 1 + j %>. </td>
-                            <td><%= urlCollection.clickDetails[j].referrer %> </td>
-                            <td><%= urlCollection.clickDetails[j].userAgent %> </td>
-                            <td><%= urlCollection.clickDetails[j].timestamp %> </td>
+                            <td> >%= 1 + analytics.clickDetails.indexOf(element) %> </td>
+                            <td> >%= element.referrer %> </td>
+                            <td> >%= element.userAgent %> </td>
+                            <td> >%= element.timestamp %> </td>
                         </tr>
-                    <% } %>
+                    >% }) %>
                 </tbody>
             </table>
-
         </fieldset>
-    <% } %>
+
+    <% }) %>
     
     <script>
         const createUrlForm = document.querySelector('#createUrlForm');
