@@ -4,6 +4,7 @@ import { Document, Model, Schema, model } from "mongoose";
 interface IUrlSchema extends Document {
     longUrl: string;
     shortUrl: string;
+    qrcodeFileLocation: string;
     qrcodeRequested: boolean;
     clicks: number;
     clickDetails: {
@@ -19,6 +20,7 @@ const UrlSchema: Schema<IUrlSchema> = new Schema<IUrlSchema>(
     {
         longUrl: 'string',
         shortUrl: 'string',
+        qrcodeFileLocation: 'string',
         qrcodeRequested: 'boolean',
         clicks: {
             type: 'number',

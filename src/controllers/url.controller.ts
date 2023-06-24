@@ -15,7 +15,7 @@ const PORT: string | undefined = process.env.PORT;
 async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
     try {
         
-        console.log({reqBody: req.body});
+        // console.log({reqBody: req.body});
 
         if (Object.keys(req.body).length === 0) return res.status(400).json({ errMsg: `bad request` });
         const validatedUrl = ZUrlSchema.safeParse(req.body);
@@ -34,7 +34,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 const resMsg = {
                     errMsg: `Hey, you previously created a short url for that link. Here it is: \nSHORT URL: ${existingLongUrl.shortUrl}, \nLONG URL: ${existingLongUrl.longUrl}`,
                 };
-                console.log(resMsg);
+                // console.log(resMsg);
                 res.status(200).send(resMsg);
                 return;
             }
@@ -47,7 +47,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                     const resMsg = {
                         errMsg: `Hey, that short url already exist. Here it is: \nSHORT URL: ${existingShortUrl.shortUrl}, \nLONG URL: ${existingShortUrl.longUrl}`
                     };
-                    console.log(resMsg);
+                    // console.log(resMsg);
                     res.status(200).send(resMsg);
                     return;
                 }
@@ -55,34 +55,40 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
             }
             shortUrl = req.get('host') + '/' + urlCode;
-            console.log({shortUrl});
+            // console.log({shortUrl});
 
             const qrcodeFileName = urlCode + '.png';
             const qrcodeFilePath = join(__dirname, '..', '..', 'public', 'img', qrcodeFileName);
-            console.log({qrcodeFilePath});
-            let qrcodeFile;
-            console.log({qrcodeRequested});
+            // console.log({qrcodeFilePath});
+            // console.log({qrcodeRequested});
             if (qrcodeRequested) {
-                console.log({qrcodeRequested});
-                qrcodeFile = await qrGenerator(qrcodeFilePath, shortUrl);
+                // console.log({qrcodeRequested});
+                await qrGenerator(qrcodeFilePath, shortUrl);
             }
-            const newShortUrl = new UrlModel({ shortUrl, longUrl, qrcodeRequested, });
+            const qrcodeFileLocation = '/img/' + qrcodeFileName;
+            // console.log({qrcodeFileLocation})
+            const newShortUrl = new UrlModel({ qrcodeFileLocation, shortUrl, longUrl, qrcodeRequested, });
             await newShortUrl.save();
-            console.log({ qrcodeFile, qrcodeFileName, qrcodeFilePath, newShortUrl, });
+            // console.log({ qrcodeFileName, qrcodeFilePath, newShortUrl, });
 
-            res.status(201).render('dashboard', {
-                qrcodeImage: qrcodeFilePath
-            })
+            console.log({qrcodeFileLocation});
 
+            res.status(201).json({
+                qrcodeFileLocation,
+                shortUrlCreated: true,
+                resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${'was generated' || 'was not requested for'}, Long url: ${longUrl}.`
+            });
+            
+            // res.status(201).render('dashboard', { qrcodeFileLocation });
             // res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
             // res.status(201).sendFile(qrcodeFilePath);
             // // Set response header for qrcode file:
             // res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
             // res.status(201).sendFile(qrcodeFilePath, () => {
-            //     res.json({
-            //         shortUrlCreated: true,
-            //         resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${'was generated' || 'was not requested for'}, Long url: ${longUrl}.`
-            //     });
+                // res.json({
+                //     shortUrlCreated: true,
+                //     resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${'was generated' || 'was not requested for'}, Long url: ${longUrl}.`
+                // });
             // })
         } else {
             res.status(404).send({errMsg: `Please enter a valid long url.`});
@@ -97,7 +103,9 @@ async function getDashboard(req: Request, res: Response) {
     try {
         const urlCollection = await UrlModel.find();
         // console.log({urlCollection});
-        res.status(200).render('dashboard', { urlCollection, qrImage: "/img/yellow.png" });
+        res.status(200).render('dashboard', {
+            urlCollection,
+        });
     } catch (err: unknown) {
         res.status(500).render('500-page');
         if (err instanceof Error) return console.log(err.message);

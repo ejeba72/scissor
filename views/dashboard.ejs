@@ -13,17 +13,14 @@
             <!-- qrcode -->
             <label for="qrcode">Check to generate QRCode:</label>
             <input type="checkbox" name="qrcode"> <br><br>
-            <!-- response message from server -->
-            <div class="resMsg">
-                <img src=<%=qrImage%> height="100" alt="image named yellow">
-                <!-- <img src="/img/yellow.png" height="100" alt="image named yellow"> -->
-            </div>
             <!-- submit button -->
             <button>Create</button> <br>
+            <!-- response message from server -->
+            <div class="resMsg">
+            <img src="" height="100" id="qrcodeImg" alt="">
+            </div>
         </fieldset>
     </form>
-
-    <!-- <img src="/img/yellow.png" height="100" alt="image named gg"> -->
 
     <caption><h2>Link History:</h2></caption>
     <table>
@@ -58,6 +55,7 @@
                         <th>CLICK ORIGIN (Referrer)</th>
                         <th>BROWSER (userAgent)</th>
                         <th>TIME OF CLICK (timestamp)</th>
+                        <th><img src="<%=urlCollection[i].qrcodeFileLocation%>" height="100" alt=""></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,9 +77,11 @@
     <script>
         const createUrlForm = document.querySelector('#createUrlForm');
         const resMsg = document.querySelector('.resMsg');
+        const qrcodeImageElement = document.querySelector('#qrcodeImg');
         createUrlForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             resMsg.textContent = '';  // reset response message div
+            qrcodeImageElement.src = '';
             // form input is assigned to js variables
             const longUrl = createUrlForm.longUrl.value;
             const customUrl = createUrlForm.customUrl.value;
@@ -95,8 +95,15 @@
                 });
                 const data = await res.json();
                 console.log({data});
-                if (data.shortUrlCreated) return resMsg.textContent = data.resMsg;
+                if (data.shortUrlCreated) {
+                    resMsg.textContent = data.resMsg;
+                    qrcodeImageElement.src = data.qrcodeFileLocation;
+                    console.log({dataQrcodeFileLocation: data.qrcodeFileLocation})
+                    console.log({qrcodeImageSource: qrcodeImageElement.src});
+                    return;
+                }
                 resMsg.textContent = data.errMsg;
+                qrcodeImageElement.src = '';
             } catch (err) {
                 console.log(err);
             }
