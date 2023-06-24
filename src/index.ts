@@ -10,7 +10,6 @@ import cookieParser from 'cookie-parser';
 import { checkUser } from './middleware/auth.middleware';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
-// import { join } from 'path';
 
 config();
 mongodb();
@@ -25,7 +24,6 @@ const limiter = rateLimit({
 })
 
 app.set('view engine', 'ejs');
-// app.set('views', join(__dirname, 'views'));
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());

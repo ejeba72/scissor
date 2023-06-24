@@ -14,11 +14,16 @@
             <label for="qrcode">Check to generate QRCode:</label>
             <input type="checkbox" name="qrcode"> <br><br>
             <!-- response message from server -->
-            <div class="resMsg"></div>
+            <div class="resMsg">
+                <img src=<%=qrImage%> height="100" alt="image named yellow">
+                <!-- <img src="/img/yellow.png" height="100" alt="image named yellow"> -->
+            </div>
             <!-- submit button -->
             <button>Create</button> <br>
         </fieldset>
     </form>
+
+    <!-- <img src="/img/yellow.png" height="100" alt="image named gg"> -->
 
     <caption><h2>Link History:</h2></caption>
     <table>

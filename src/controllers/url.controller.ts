@@ -58,7 +58,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             console.log({shortUrl});
 
             const qrcodeFileName = urlCode + '.png';
-            const qrcodeFilePath = join(__dirname, '..', '..', 'public', qrcodeFileName);
+            const qrcodeFilePath = join(__dirname, '..', '..', 'public', 'img', qrcodeFileName);
             console.log({qrcodeFilePath});
             let qrcodeFile;
             console.log({qrcodeRequested});
@@ -70,10 +70,12 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             await newShortUrl.save();
             console.log({ qrcodeFile, qrcodeFileName, qrcodeFilePath, newShortUrl, });
 
-            res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
-            res.status(201).sendFile(qrcodeFilePath);
+            res.status(201).render('dashboard', {
+                qrcodeImage: qrcodeFilePath
+            })
 
-
+            // res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
+            // res.status(201).sendFile(qrcodeFilePath);
             // // Set response header for qrcode file:
             // res.set('Content-disposition', 'attachment; filename=qrcodeFileName');
             // res.status(201).sendFile(qrcodeFilePath, () => {
@@ -95,7 +97,7 @@ async function getDashboard(req: Request, res: Response) {
     try {
         const urlCollection = await UrlModel.find();
         // console.log({urlCollection});
-        res.status(200).render('dashboard', { urlCollection });
+        res.status(200).render('dashboard', { urlCollection, qrImage: "/img/yellow.png" });
     } catch (err: unknown) {
         res.status(500).render('500-page');
         if (err instanceof Error) return console.log(err.message);
