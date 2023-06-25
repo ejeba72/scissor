@@ -8,10 +8,12 @@
 <body>
     <header>
         <nav>
-            <h1><a href="/">Scissor</a></h1>
+            <a href="/scissor/homepage"><img src="/scissor-logo.jpg" height="70" alt=""></a>
+            <!-- <h1><a href="/scissor/homepage">Scissor</a></h1> -->
             <% if (user) { %>
             <li> <%= user.email %> </li>
             <li><a href="/api/v1/user/logout">Log out</a></li>
+            <li><a href="/api/v1/">Go to dashboard</a></li>
             <% } else { %> 
             <li><a href="/scissor/login">Log in</a></li>
             <li><a href="/scissor/signup" class="btn">Sign up</a></li>

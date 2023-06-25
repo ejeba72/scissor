@@ -10,6 +10,8 @@ import cookieParser from 'cookie-parser';
 import { checkUser } from './middleware/auth.middleware';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
+import { join } from 'path';
+import serveFavicon from 'serve-favicon';
 
 config();
 mongodb();
@@ -17,6 +19,7 @@ mongodb();
 const app: Application = express();
 const PORT: string | undefined = process.env.PORT;
 const apiV1: string = '/api/v1';
+const faviconPath = join(__dirname, '..', 'public', 'favicon.ico');
 const limiter = rateLimit({
     windowMs: 60 * 1000,  // 1 minute window
     max: 100,  // Each IP is limited to 100 requests per window period
@@ -28,6 +31,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(serveFavicon(faviconPath));
 app.use(limiter);
 app.get('*', checkUser);
 app.use(redirectRoute);

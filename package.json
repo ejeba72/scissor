@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.1",
     "qrcode": "^1.5.3",
+    "serve-favicon": "^2.5.0",
     "shortid": "^2.2.16",
     "valid-url": "^1.0.9",
     "zod": "^3.21.4"
@@ -36,6 +37,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.1.5",
     "@types/qrcode": "^1.5.0",
+    "@types/serve-favicon": "^2.5.4",
     "@types/shortid": "^0.0.29",
     "@types/valid-url": "^1.0.4",
     "typescript": "^5.0.4"
