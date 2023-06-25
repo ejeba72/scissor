@@ -61,11 +61,12 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             const qrcodeFilePath = join(__dirname, '..', '..', 'public', 'img', qrcodeFileName);
             // console.log({qrcodeFilePath});
             // console.log({qrcodeRequested});
+            let qrcodeFileLocation = '';
             if (qrcodeRequested) {
                 // console.log({qrcodeRequested});
                 await qrGenerator(qrcodeFilePath, shortUrl);
+                qrcodeFileLocation = '/img/' + qrcodeFileName;
             }
-            const qrcodeFileLocation = '/img/' + qrcodeFileName;
             // console.log({qrcodeFileLocation})
             const newShortUrl = new UrlModel({ qrcodeFileLocation, shortUrl, longUrl, qrcodeRequested, });
             await newShortUrl.save();
@@ -103,9 +104,7 @@ async function getDashboard(req: Request, res: Response) {
     try {
         const urlCollection = await UrlModel.find();
         // console.log({urlCollection});
-        res.status(200).render('dashboard', {
-            urlCollection,
-        });
+        res.status(200).render('dashboard', { urlCollection });
     } catch (err: unknown) {
         res.status(500).render('500-page');
         if (err instanceof Error) return console.log(err.message);
