@@ -4,7 +4,7 @@ import { generate } from 'shortid';
 import { config } from 'dotenv';
 import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
-import { qrGenerator } from '../utils/qrcode.util';
+import { qrGenerator, qrcodeResMsg } from '../utils/qrcode.util';
 import { join } from 'path';
 
 config();
@@ -28,7 +28,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             const existingLongUrl = await UrlModel.findOne({ longUrl });
             if (existingLongUrl) {
                 const resMsg = {
-                    errMsg: `Hey, you previously created a short url for that link. Here it is: \nSHORT URL: ${existingLongUrl.shortUrl}, \nLONG URL: ${existingLongUrl.longUrl}`,
+                    errMsg: `Hey, you previously created a short url for that link. Here it is: SHORT URL: "${existingLongUrl.shortUrl}", LONG URL: "${existingLongUrl.longUrl}"`,
                 };
                 res.status(200).send(resMsg);
                 return;
@@ -40,7 +40,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 const existingShortUrl = await UrlModel.findOne({ shortUrl });
                 if (existingShortUrl) {
                     const resMsg = {
-                        errMsg: `Hey, that short url already exist. Here it is: \nSHORT URL: ${existingShortUrl.shortUrl}, \nLONG URL: ${existingShortUrl.longUrl}`
+                        errMsg: `Hey, that short url already exist. Here it is: SHORT URL: "${existingShortUrl.shortUrl}", LONG URL: "${existingShortUrl.longUrl}"`
                     };
                     res.status(200).send(resMsg);
                     return;
@@ -64,7 +64,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
             res.status(201).json({
                 qrcodeFileLocation,
                 shortUrlCreated: true,
-                resMsg: `Short url created! Short Url: ${shortUrl}, QRCode: ${'was generated' || 'was not requested for'}, Long url: ${longUrl}.`
+                resMsg: `Short url created! Short Url: "${shortUrl}", ${qrcodeResMsg(qrcodeRequested)}, Long url: "${longUrl}."`
             });
 
         } else {
