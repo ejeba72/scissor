@@ -11,6 +11,7 @@ const redis = new Redis();
 // @desc redirects from short url to long url
 async function getRedirect(req: Request, res: Response): Promise<void>  {
     try {
+        console.log({reqHeaders: req.headers});
         const { url } = req;
         const shortUrl = req.get('host') + url;
         async function analytics(doc: any): Promise<void> {

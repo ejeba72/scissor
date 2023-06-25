@@ -6,9 +6,10 @@ import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
 import { qrGenerator, qrcodeResMsg } from '../utils/qrcode.util';
 import { join } from 'path';
+import { GetPublicKeyOrSecret, JwtPayload, Secret, verify } from 'jsonwebtoken';
 
 config();
-const PORT: string | undefined = process.env.PORT;
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as Secret | GetPublicKeyOrSecret;
 
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>
@@ -57,16 +58,18 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 await qrGenerator(qrcodeFilePath, shortUrl);
                 qrcodeFileLocation = '/img/' + qrcodeFileName;
             }
+            // retrieve userId from cookie
+            const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
+            const userId = (decodedToken as any)?.id;
             // create model and save to db
-            const newShortUrl = new UrlModel({ qrcodeFileLocation, shortUrl, longUrl, qrcodeRequested, });
+            const newShortUrl = new UrlModel({ qrcodeFileLocation, userId, shortUrl, longUrl, qrcodeRequested, });
             await newShortUrl.save();
-
+            // response to client
             res.status(201).json({
                 qrcodeFileLocation,
                 shortUrlCreated: true,
                 resMsg: `Short url created! Short Url: "${shortUrl}", ${qrcodeResMsg(qrcodeRequested)}, Long url: "${longUrl}."`
             });
-
         } else {
             res.status(404).json({errMsg: `Please enter a valid long url.`});
         }
@@ -78,7 +81,9 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 }
 async function getDashboard(req: Request, res: Response) {
     try {
-        const urlCollection = await UrlModel.find();
+        const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
+        const userId = (decodedToken as any)?.id;
+        const urlCollection = await UrlModel.find({ userId });
         res.status(200).render('dashboard', { urlCollection });
     } catch (err: unknown) {
         res.status(500).render('500-page');

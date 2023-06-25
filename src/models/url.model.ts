@@ -1,10 +1,10 @@
-import { timeStamp } from "console";
 import { Document, Model, Schema, model } from "mongoose";
 
 interface IUrlSchema extends Document {
     longUrl: string;
     shortUrl: string;
     qrcodeFileLocation: string;
+    userId: string;
     qrcodeRequested: boolean;
     clicks: number;
     clickDetails: {
@@ -15,12 +15,15 @@ interface IUrlSchema extends Document {
     createdAt: Date;
     updatedAt: Date;
 };
-
 const UrlSchema: Schema<IUrlSchema> = new Schema<IUrlSchema>(
     {
         longUrl: 'string',
         shortUrl: 'string',
         qrcodeFileLocation: 'string',
+        userId: {
+            type: 'string',
+            required: true,
+        },
         qrcodeRequested: 'boolean',
         clicks: {
             type: 'number',
