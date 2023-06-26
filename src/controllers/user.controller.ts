@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/user.model";
+import { UrlModel } from "../models/url.model";
 import { ZSignupSchema } from "../validations/user.validation";
 import { config } from "dotenv";
 import { sign } from 'jsonwebtoken';
+import { generateUserId } from "../utils/userId.utils";
 
 config();
 const expiration: number = 60 * 60 * 24 * 3;
@@ -54,10 +56,26 @@ async function loginLogic(req: Request, res: Response) {
     }
 }
 async function logoutLogic(req: Request, res: Response) {
-    res.clearCookie('jwt');
-    res.status(302).redirect('/scissor/homepage');
+    try {
+        res.clearCookie('jwt');
+        res.status(302).redirect('/scissor/homepage');
+    } catch (err: unknown) {
+        res.status(500).render('500-page');
+        if (err instanceof Error) return console.log(err.message);
+        return console.log(err);
+    }
 }
 async function deleteUserLogic(req: Request, res: Response) {
+    try {
+        console.log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
+        const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
+        console.log({userId});
+        await UrlModel.deleteMany({ userId });
+    } catch (err: unknown) {
+        res.status(500).render('500-page');
+        if (err instanceof Error) return console.log(err.message);
+        return console.log(err);
+    }
     console.log(`delete user request`);
     res.json({ errMsg: `this is the delete user endpoint` });
 }

@@ -33,4 +33,4 @@ function checkUser(req: Request, res: Response, next: NextFunction) {
         next();
     })
 }
-export { verifyJwtToken, checkUser };
+export { verifyJwtToken, checkUser, };

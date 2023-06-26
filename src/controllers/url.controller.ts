@@ -6,7 +6,8 @@ import { UrlModel } from '../models/url.model';
 import { ZUrlSchema } from '../validations/url.validation';
 import { qrGenerator, qrcodeResMsg } from '../utils/qrcode.util';
 import { join } from 'path';
-import { GetPublicKeyOrSecret, JwtPayload, Secret, verify } from 'jsonwebtoken';
+import { GetPublicKeyOrSecret, Secret, verify } from 'jsonwebtoken';
+import { generateUserId } from '../utils/userId.utils';
 
 config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as Secret | GetPublicKeyOrSecret;
@@ -59,8 +60,13 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 qrcodeFileLocation = '/img/' + qrcodeFileName;
             }
             // retrieve userId from cookie
-            const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
-            const userId = (decodedToken as any)?.id;
+            // const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
+            // const userId = (decodedToken as any)?.id;
+
+            console.log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
+            const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
+            console.log({userId});
+
             // create model and save to db
             const newShortUrl = new UrlModel({ qrcodeFileLocation, userId, shortUrl, longUrl, qrcodeRequested, });
             await newShortUrl.save();
@@ -81,8 +87,13 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 }
 async function getDashboard(req: Request, res: Response) {
     try {
-        const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
-        const userId = (decodedToken as any)?.id;
+        // const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
+        // const userId = (decodedToken as any)?.id;
+
+        console.log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
+        const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
+        console.log({userId});
+
         const urlCollection = await UrlModel.find({ userId });
         res.status(200).render('dashboard', { urlCollection });
     } catch (err: unknown) {

@@ -1,4 +1,4 @@
-import { toDataURL, toFile } from 'qrcode';
+import { toFile } from 'qrcode';
 
 async function qrGenerator(filePath: string, data: string): Promise<unknown> {
     try { 
