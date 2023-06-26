@@ -59,14 +59,8 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
                 await qrGenerator(qrcodeFilePath, shortUrl);
                 qrcodeFileLocation = '/img/' + qrcodeFileName;
             }
-            // retrieve userId from cookie
-            // const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
-            // const userId = (decodedToken as any)?.id;
-
-            console.log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
+            // retrieve userId from jwt cookie
             const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
-            console.log({userId});
-
             // create model and save to db
             const newShortUrl = new UrlModel({ qrcodeFileLocation, userId, shortUrl, longUrl, qrcodeRequested, });
             await newShortUrl.save();
@@ -85,15 +79,15 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
         console.error(err);
     }
 }
+// @route GET /api/v1
+// @desc render dashboard page
 async function getDashboard(req: Request, res: Response) {
     try {
         // const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
         // const userId = (decodedToken as any)?.id;
-
         console.log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
         const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
         console.log({userId});
-
         const urlCollection = await UrlModel.find({ userId });
         res.status(200).render('dashboard', { urlCollection });
     } catch (err: unknown) {

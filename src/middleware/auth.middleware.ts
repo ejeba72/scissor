@@ -7,10 +7,13 @@ config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as Secret | GetPublicKeyOrSecret;
 
 function verifyJwtToken(req: Request, res: Response, next: NextFunction) {
+    console.log(`verifyJwtToken is been used`);
     const jwtToken = req.cookies?.jwt;
-    if (!jwtToken) return res.status(302).redirect('/scissor/');
+    const referer = req.headers?.referer;
+    if (referer === 'http://localhost:1111/scissor/login') return next(); // the debugging that led to this line of code suffer me ehn!
+    if (!jwtToken) return res.status(302).redirect('/scissor/login');
     verify(jwtToken, JWT_SECRET_KEY, err => {
-        if (err) return res.status(302).redirect('/scissor');
+        if (err) return res.status(302).redirect('/scissor/login');
         next();
     });
 }
