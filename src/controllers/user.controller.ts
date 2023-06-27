@@ -78,6 +78,7 @@ async function deleteUserLogic(req: Request, res: Response) {
         // await redis.del(...redisKeys);
         // await UrlModel.deleteMany({ userId });
         
+        
         const urlDocuments = await UrlModel.find();
         console.log({urlDocuments});
         const redisKeys = urlDocuments.map(urlDoc => { return urlDoc.shortUrl });

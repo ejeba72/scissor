@@ -51,20 +51,19 @@
                 <thead>
                     <tr>
                         <th>S/N</th>
-                        <th>CLICK ORIGIN (Referrer)</th>
+                        <th>TIME OF CLICKS (timestamp)</th>
                         <th>BROWSER (userAgent)</th>
-                        <th>TIME OF CLICK (timestamp)</th>
+                        <th>ORIGIN OF CLICKS (Referrer)</th>
                         <th><img src="<%=urlCollection[i].qrcodeFileLocation%>" class="analyticsQrcodeImages" height="100" alt=""></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% for( let j = 0; j < urlCollection?.clickDetails?.length; j++ ) { %>
-                        <h3> hello, world<%= console.log(urlCollection.clickDetails) %> </h3>
+                    <% for( let j = 0; j < urlCollection[i]?.clickDetails?.length; j++ ) { %>
                         <tr>
                             <td><%= 1 + j %>. </td>
-                            <td><%= urlCollection.clickDetails[j].referrer %> </td>
-                            <td><%= urlCollection.clickDetails[j].userAgent %> </td>
-                            <td><%= urlCollection.clickDetails[j].timestamp %> </td>
+                            <td><%= urlCollection[i].clickDetails[j].timestamp %> </td>
+                            <td><%= urlCollection[i].clickDetails[j].userAgent %> </td>
+                            <td><%= urlCollection[i].clickDetails[j].referrer %> </td>
                         </tr>
                     <% } %>
                 </tbody>
@@ -78,7 +77,6 @@
         const resMsg = document.querySelector('.resMsg');
         const qrcodeImageElement = document.querySelector('#qrcodeImg');
         analyticsQrcodeImageElements = document.querySelector('.analyticsQrcodeImages');
-        console.log({analyticsQrcodeImageElements});
         async function deleteQrcodeFetch() {
             const res = await fetch('/api/v1/delete', {
                 method: 'GET',
@@ -88,10 +86,8 @@
         try {
             if (analyticsQrcodeImageElements) {
                 analyticsQrcodeImageElements.onload = deleteQrcodeFetch();
-                console.log({imageLoadStatus: analyticsQrcodeImageElements});
             } else {
                 deleteQrcodeFetch();
-                console.log({imageLoadStatus: analyticsQrcodeImageElements});
             }
         } catch (err) {
             console.log(err);
@@ -115,7 +111,6 @@
             const longUrl = createUrlForm.longUrl.value;
             const customUrl = createUrlForm.customUrl.value;
             const qrcodeRequested = createUrlForm.qrcode.checked;
-            console.log({ qrcodeRequested, customUrl, longUrl });
             try {
                 const res = await fetch('/api/v1/', {
                     method: 'POST',
@@ -123,12 +118,9 @@
                     headers: { 'Content-Type': 'application/json' }
                 });
                 const data = await res.json();
-                console.log({data});
                 if (data.shortUrlCreated) {
                     resMsg.textContent = data.resMsg;
                     qrcodeImageElement.src = data.qrcodeFileLocation;
-                    console.log({dataQrcodeFileLocation: data.qrcodeFileLocation})
-                    console.log({qrcodeImageSource: qrcodeImageElement.src});
                     return;
                 }
                 resMsg.textContent = data.errMsg;

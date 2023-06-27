@@ -93,22 +93,12 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 // @desc render dashboard page
 async function getDashboard(req: Request, res: Response) {
     try {
-        // const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
-        // const userId = (decodedToken as any)?.id;
-        // log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
         const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
         log({userId});
         const urlCollection = await UrlModel.find({ userId });
-
-
-        // const qrcodeRequested = '';  // actually a boolean. 1. make a collection of urls documents that require qrcode images, using the filter method.
-        // // 2. get the file paths and shorturl of the documents that require qrcode images.
-        // // const qrcodeFilePath = join(__dirname, '..', '..', 'public', 'img', qrcodeFileName);
-
         const qrcodeDocs = urlCollection.filter(doc => {
             return doc.qrcodeRequested === true;
         });
-        // log({qrcodeDocs});
         const generatorParams = qrcodeDocs.map(doc => {
             return {
                 qrcodeFilePath: join(__dirname, '..', '..', 'public', doc.qrcodeFileLocation),
@@ -128,18 +118,17 @@ async function getDashboard(req: Request, res: Response) {
         log(err); 
     }
 }
-
 async function deleteQrcodeImages(req: Request, res: Response) {
     try {
         const dirPath = join(__dirname, '..', '..', 'public', 'img');
         const files = await readdir(dirPath);
-        log({filesBeforeDel: files});
+        // log({filesBeforeDel: files});
         const deleteFilePromises = files.map(file =>
           unlink(join(dirPath, file)),
         );
         await Promise.all(deleteFilePromises);
-        log(`bad guy!`);
-        res.status(200).send();
+        // log(`bad guy!`);
+        res.status(200).send(); // empty response is intentional
     } catch (err: unknown) {
         res.status(500).send();
         if (err instanceof Error) return log(err.message);
@@ -148,8 +137,6 @@ async function deleteQrcodeImages(req: Request, res: Response) {
 }
 
 // update, deleteOne, deleteAll
-async function getUrl() {}
-async function getAllUrls() {}
 async function updateUrl() {}
 async function deleteUrl() {}
 async function deleteAllUrls() {}
