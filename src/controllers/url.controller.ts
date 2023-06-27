@@ -8,10 +8,8 @@ import { qrGenerator, qrcodeResMsg } from '../utils/qrcode.util';
 import { join } from 'path';
 import { GetPublicKeyOrSecret, Secret, verify } from 'jsonwebtoken';
 import { generateUserId } from '../utils/userId.utils';
-import { unlink } from 'fs';
-import { URL } from 'url';
-import { readdir } from 'fs/promises';
-import { error } from 'console';
+import { readdir, unlink } from 'fs/promises';
+import { error, log } from 'console';
 
 config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as Secret | GetPublicKeyOrSecret;
@@ -87,8 +85,8 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
         }
     } catch (err: unknown) {
         res.status(500).render('500-page');
-        if (err instanceof Error) return console.error(err.message);
-        console.error(err);
+        if (err instanceof Error) return error(err.message);
+        error(err);
     }
 }
 // @route GET /api/v1
@@ -97,9 +95,9 @@ async function getDashboard(req: Request, res: Response) {
     try {
         // const decodedToken = verify(req.cookies?.jwt, JWT_SECRET_KEY);
         // const userId = (decodedToken as any)?.id;
-        // console.log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
+        // log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
         const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
-        console.log({userId});
+        log({userId});
         const urlCollection = await UrlModel.find({ userId });
 
 
@@ -110,69 +108,42 @@ async function getDashboard(req: Request, res: Response) {
         const qrcodeDocs = urlCollection.filter(doc => {
             return doc.qrcodeRequested === true;
         });
-        // console.log({qrcodeDocs});
+        // log({qrcodeDocs});
         const generatorParams = qrcodeDocs.map(doc => {
             return {
                 qrcodeFilePath: join(__dirname, '..', '..', 'public', doc.qrcodeFileLocation),
                 shortUrl: doc.shortUrl,
             }
         });
-        // console.log({generatorParams});
-        // generatorParams.forEach(params => {
-        //     qrGenerator(params.qrcodeFilePath, params.shortUrl);
-        // });
-
         generatorParams.forEach(params => {
             async function generatorFunction() {
                 await qrGenerator(params.qrcodeFilePath, params.shortUrl);
             }
             generatorFunction();
         });
-
-
-        // if (qrcodeRequested) {
-        //     await qrGenerator(qrcodeFilePath, shortUrl);
-        // }
-
-
         res.status(200).render('dashboard', { urlCollection });
     } catch (err: unknown) {
         res.status(500).render('500-page');
-        if (err instanceof Error) return console.log(err.message);
-        console.log(err); 
+        if (err instanceof Error) return log(err.message);
+        log(err); 
     }
 }
-async function deleteQrcodeImage(req: Request, res: Response) {
+
+async function deleteQrcodeImages(req: Request, res: Response) {
     try {
-        // console.log({ reqBody: req.body });
-        // const url = new URL(req.body.qrcodeImageToDelete);
-        // const qrcodeImagePath = url.pathname;
-        // console.log({ qrcodeImagePath });
-        // const qrcodeFilePath = join(__dirname, '..', '..', 'public', qrcodeImagePath);
-        // console.log({qrcodeFilePath});
-        // await unlink(qrcodeFilePath, (err) => {
-        //     if (err) throw err;
-        //     console.log(`image ${qrcodeImagePath} was deleted`);
-        // });
-
-        
-        // try {
-        //     console.log({imageDirectory: join(__dirname, '..', '..', 'public', 'img')})
-        //     const qrcodeFiles = await readdir(join(__dirname, '..', '..', 'public', 'img'));
-        //     for (const qrcodeFile of qrcodeFiles)
-        //     await unlink(join(__dirname, '..', '..', 'public', 'img', qrcodeFile), err => {
-        //         if (err) throw err;
-        //     });
-        // } catch (err) {
-        //     console.error(err);
-        // }
-
-        console.log(`bad guy!`);
+        const dirPath = join(__dirname, '..', '..', 'public', 'img');
+        const files = await readdir(dirPath);
+        log({filesBeforeDel: files});
+        const deleteFilePromises = files.map(file =>
+          unlink(join(dirPath, file)),
+        );
+        await Promise.all(deleteFilePromises);
+        log(`bad guy!`);
         res.status(200).send();
     } catch (err: unknown) {
         res.status(500).send();
-        if (err instanceof Error) return console.log(err.message);
-        return console.log(err);
+        if (err instanceof Error) return log(err.message);
+        return log(err);
     }
 }
 
@@ -183,4 +154,4 @@ async function updateUrl() {}
 async function deleteUrl() {}
 async function deleteAllUrls() {}
 
-export { postNewShortUrl, getDashboard, deleteQrcodeImage };
+export { postNewShortUrl, getDashboard, deleteQrcodeImages };

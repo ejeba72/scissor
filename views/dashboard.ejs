@@ -79,27 +79,38 @@
         const qrcodeImageElement = document.querySelector('#qrcodeImg');
         analyticsQrcodeImageElements = document.querySelector('.analyticsQrcodeImages');
         console.log({analyticsQrcodeImageElements});
-        if (analyticsQrcodeImageElements) {
-            analyticsQrcodeImageElements.onload = async function() {
-                const res = await fetch('/api/v1/delete', {
-                    method: 'POST',
-                    body: JSON.stringify({ qrcodeImageToDelete: analyticsQrcodeImageElements.src }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
+        async function deleteQrcodeFetch() {
+            const res = await fetch('/api/v1/delete', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        try {
+            if (analyticsQrcodeImageElements) {
+                analyticsQrcodeImageElements.onload = deleteQrcodeFetch();
+                console.log({imageLoadStatus: analyticsQrcodeImageElements});
+            } else {
+                deleteQrcodeFetch();
+                console.log({imageLoadStatus: analyticsQrcodeImageElements});
             }
+        } catch (err) {
+            console.log(err);
         }
         // create URL form event listener
         createUrlForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             resMsg.textContent = '';  // reset response message div
             qrcodeImageElement.src = '';
-            qrcodeImageElement.onload = async function() {
-                const res = await fetch('/api/v1/delete', {
-                    method: 'POST',
-                    body: JSON.stringify({ qrcodeImageToDelete: qrcodeImageElement.src }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            } 
+            try {
+                qrcodeImageElement.onload = async function() {
+                    const res = await fetch('/api/v1/delete', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                };
+            } catch (err) {
+                console.log(err);
+            }
             // form input is assigned to js variables
             const longUrl = createUrlForm.longUrl.value;
             const customUrl = createUrlForm.customUrl.value;

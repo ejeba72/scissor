@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { deleteQrcodeImage, getDashboard, postNewShortUrl, } from "../controllers/url.controller";
+import { deleteQrcodeImages, getDashboard, postNewShortUrl, } from "../controllers/url.controller";
 import { verifyJwtToken } from "../middleware/auth.middleware";
 
 const router = Router();
 // router.use('/', verifyJwtToken);
 router.route('/').post(postNewShortUrl).get(getDashboard);
-router.route('/delete').post(deleteQrcodeImage);
+router.route('/delete').get(deleteQrcodeImages);
 
 export { router as urlRoute };
