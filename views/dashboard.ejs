@@ -54,7 +54,7 @@
                         <th>CLICK ORIGIN (Referrer)</th>
                         <th>BROWSER (userAgent)</th>
                         <th>TIME OF CLICK (timestamp)</th>
-                        <th><img src="<%=urlCollection[i].qrcodeFileLocation%>" id="analyticsQrcodeImages" height="100" alt=""></th>
+                        <th><img src="<%=urlCollection[i].qrcodeFileLocation%>" class="analyticsQrcodeImages" height="100" alt=""></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,32 +77,30 @@
         const createUrlForm = document.querySelector('#createUrlForm');
         const resMsg = document.querySelector('.resMsg');
         const qrcodeImageElement = document.querySelector('#qrcodeImg');
-        analyticsQrcodeImageElements = document.querySelector('#analyticsQrcodeImages');
-
-        async function deleteQrcodeImage(imageSrc) {
-            const res = await fetch('/api/v1/delete', {
+        analyticsQrcodeImageElements = document.querySelector('.analyticsQrcodeImages');
+        console.log({analyticsQrcodeImageElements});
+        if (analyticsQrcodeImageElements) {
+            analyticsQrcodeImageElements.onload = async function() {
+                const res = await fetch('/api/v1/delete', {
                     method: 'POST',
-                    body: JSON.stringify({ qrcodeImageToDelete: imageSrc }),
+                    body: JSON.stringify({ qrcodeImageToDelete: analyticsQrcodeImageElements.src }),
                     headers: { 'Content-Type': 'application/json' }
                 });
+            }
         }
-        analyticsQrcodeImageElements.onload = deleteQrcodeImage(analyticsQrcodeImageElements.src);
-        
-        
         // create URL form event listener
         createUrlForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             resMsg.textContent = '';  // reset response message div
             qrcodeImageElement.src = '';
-            qrcodeImageElement.onload = deleteQrcodeImage(qrcodeImageElement.src);
-            // qrcodeImageElement.onload = async function() {
-            //     const res = await fetch('/api/v1/delete', {
-            //         method: 'POST',
-            //         body: JSON.stringify({ qrcodeImageToDelete: qrcodeImageElement.src }),
-            //         headers: { 'Content-Type': 'application/json' }
-            //     });
-            // } 
-            // // form input is assigned to js variables
+            qrcodeImageElement.onload = async function() {
+                const res = await fetch('/api/v1/delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ qrcodeImageToDelete: qrcodeImageElement.src }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } 
+            // form input is assigned to js variables
             const longUrl = createUrlForm.longUrl.value;
             const customUrl = createUrlForm.customUrl.value;
             const qrcodeRequested = createUrlForm.qrcode.checked;

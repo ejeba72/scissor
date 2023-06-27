@@ -10,6 +10,8 @@ import { GetPublicKeyOrSecret, Secret, verify } from 'jsonwebtoken';
 import { generateUserId } from '../utils/userId.utils';
 import { unlink } from 'fs';
 import { URL } from 'url';
+import { readdir } from 'fs/promises';
+import { error } from 'console';
 
 config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as Secret | GetPublicKeyOrSecret;
@@ -142,17 +144,30 @@ async function getDashboard(req: Request, res: Response) {
 }
 async function deleteQrcodeImage(req: Request, res: Response) {
     try {
-        console.log({ reqBody: req.body });
-        const url = new URL(req.body.qrcodeImageToDelete);
-        const qrcodeImagePath = url.pathname;
-        console.log({ qrcodeImagePath });
-        const qrcodeFilePath = join(__dirname, '..', '..', 'public', qrcodeImagePath);
-        console.log({qrcodeFilePath});
-        // const imagePath = '';
-        await unlink(qrcodeFilePath, (err) => {
-            if (err) throw err;
-            console.log(`QRCode image was deleted`);
-        });
+        // console.log({ reqBody: req.body });
+        // const url = new URL(req.body.qrcodeImageToDelete);
+        // const qrcodeImagePath = url.pathname;
+        // console.log({ qrcodeImagePath });
+        // const qrcodeFilePath = join(__dirname, '..', '..', 'public', qrcodeImagePath);
+        // console.log({qrcodeFilePath});
+        // await unlink(qrcodeFilePath, (err) => {
+        //     if (err) throw err;
+        //     console.log(`image ${qrcodeImagePath} was deleted`);
+        // });
+
+        
+        // try {
+        //     console.log({imageDirectory: join(__dirname, '..', '..', 'public', 'img')})
+        //     const qrcodeFiles = await readdir(join(__dirname, '..', '..', 'public', 'img'));
+        //     for (const qrcodeFile of qrcodeFiles)
+        //     await unlink(join(__dirname, '..', '..', 'public', 'img', qrcodeFile), err => {
+        //         if (err) throw err;
+        //     });
+        // } catch (err) {
+        //     console.error(err);
+        // }
+
+        console.log(`bad guy!`);
         res.status(200).send();
     } catch (err: unknown) {
         res.status(500).send();
