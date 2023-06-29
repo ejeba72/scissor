@@ -1,22 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scissor</title>
-</head>
-<body>
+
+    <style>
+
+      html {
+        background-color: black;
+        color: aliceblue;
+      }
+
+      #general-nav-links-div {
+        padding-left: 30px;
+        padding-right: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        border-width: 3px;
+        border-color: blue;
+      }
+
+      .user-status-div {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+      }
+
+      #dashboard-nav-links-div {
+        padding-left: 30px;
+        padding-right: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        border-width: 3px;
+        border-color: blue;
+      }
+
+      .dashboard-logo-div
+
+      .dashboard-anchor-links-div {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+      }
+
+    </style>
+
+  </head>
+  <body>
     <header>
-        <nav>
-            <a href="/scissor/homepage"><img src="/scissor-logo.jpg" height="70" alt=""></a>
-            <!-- <h1><a href="/scissor/homepage">Scissor</a></h1> -->
-            <% if (user) { %>
-            <li> <%= user.email %> </li>
-            <li><a href="/api/v1/user/logout">Log out</a></li>
-            <li><a href="/api/v1/">Go to dashboard</a></li>
-            <% } else { %> 
-            <li><a href="/scissor/login">Log in</a></li>
-            <li><a href="/scissor/signup" class="btn">Sign up</a></li>
-            <% } %>
-        </nav>
+      <nav>
+        <% if (isDashboard) { %>
+            <div id="general-nav-links-div">
+                <div class="logo-div">
+                    <a href="/scissor/homepage"><img src="/scissor-logo.jpg" height="40" alt=""/></a>
+                    <!-- <h1><a href="/scissor/homepage">Scissor</a></h1> -->
+                </div>
+                <div class="user-status-div">
+                    <% if (user) { %>
+                        <li><%= user.email %></li>
+                        <li><a href="/api/v1/">Go to dashboard</a></li>
+                        <li><a href="/api/v1/user/logout">Log out</a></li>
+                        <% } else { %>
+                        <li><a href="/scissor/login">Log in</a></li>
+                        <li><a href="/scissor/signup" class="btn">Sign up</a></li>
+                    <% } %>
+                </div>
+            </div>
+        <% } else { %> 
+            <h1>hello, mummy Eko</h1>
+        <% } %> 
+            
+
+      </nav>
     </header>
+  </body>
+</html>

@@ -4,9 +4,9 @@ import { Request, Response } from "express";
 // @desc render homepage
 function homepage(req: Request, res: Response) {
     try {
-        res.status(200).render('index');
+        res.status(200).render('index', { isDashboard: false });
     } catch (err) {
-        res.status(500).render('500-page');
+        res.status(500).render('500-page', { isDashboard: false });
         if (err instanceof Error) return console.log(err.message);
         console.log(err);
     }
@@ -15,9 +15,9 @@ function homepage(req: Request, res: Response) {
 // @desc render signup-success page
 function success(req: Request, res: Response) {
     try {
-        res.status(200).render('success');
+        res.status(200).render('success', { isDashboard: false });
     } catch (err) {
-        res.status(500).render('500-page');
+        res.status(500).render('500-page', { isDashboard: false });
         if (err instanceof Error) return console.log(err.message);
         console.log(err);
     }
@@ -26,9 +26,9 @@ function success(req: Request, res: Response) {
 // @desc render 404-error page
 function errorPage(req: Request, res: Response) {
     try {
-        res.status(404).render('404-page');
+        res.status(404).render('404-page', { isDashboard: false });
     } catch (err) {
-        res.status(500).render('500-page');
+        res.status(500).render('500-page', { isDashboard: false });
         if (err instanceof Error) return console.log(err.message);
         console.log(err);
     }
@@ -37,9 +37,9 @@ function errorPage(req: Request, res: Response) {
 // @desc render signup page
 function signupPage(req: Request, res: Response) {
     try {
-        res.render('signup');
+        res.render('signup', { isDashboard: false });
     } catch (err) {
-        res.status(500).render('500-page');
+        res.status(500).render('500-page', { isDashboard: false });
         if (err instanceof Error) return console.log(err.message);
         console.log(err);
     }
@@ -48,9 +48,9 @@ function signupPage(req: Request, res: Response) {
 // @desc render login page
 function loginPage(req: Request, res: Response) {
     try {
-        res.render('login');
+        res.render('login', { isDashboard: false });
     } catch (err) {
-        res.status(500).render('500-page');
+        res.status(500).render('500-page', { isDashboard: false });
         if (err instanceof Error) return console.log(err.message);
         console.log(err);
     }

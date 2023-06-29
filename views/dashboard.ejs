@@ -1,134 +1,185 @@
 <%-include('partials/header');-%>
+
+<!-- <nav>
+  
+    <div id="dashboard-nav-links-div"></div>>
+
+        <div class="dashboard-logo-div">
+            <a href="/scissor/homepage"><img src="/scissor-logo.jpg" height="40" alt=""/></a>
+            <h1><a href="/scissor/homepage">Scissor</a></h1>
+        </div>
+    
+        <div class="dashboard-anchor-links-div">
+            <li><a href="#create-modify-url">Create/modify short URL</a></li>
+            <li><a href="#link-history">Link history</a></li>
+            <li><a href="#analytics">Analytics</a></li>
+            <li><a href="#deleted-account">Delete account</a></li>
+        </div>
+      
+
+    </div>
+  
+</nav> -->
+
 <main>
+  <div>
     <h1>Welcome To Your Dashboard</h1>
+    <div>
+        <caption>
+            <h2 id="create-modify-url"></h2>
+        </caption>
+    </div>
     <form id="createUrlForm">
-        <fieldset>
-            <legend>Create short url:</legend>
-            <!-- long url -->
-            <label for="longUrl">Long url:</label> <br>
-            <input type="text" name="longUrl" placeholder="Enter long url here"> <br><br>
-            <!-- custom url -->
-            <label for="customUrl">Custom url (optional):</label> <br>
-            <input type="text" name="customUrl" placeholder="Enter custom word here"> <br><br>
-            <!-- qrcode -->
-            <label for="qrcode">Check to generate QRCode:</label>
-            <input type="checkbox" name="qrcode"> <br><br>
-            <!-- submit button -->
-            <button>Create</button> <br>
-            <!-- response message from server -->
-            <p class="resMsg"></p>
-            <img src="" height="100" id="qrcodeImg" alt="">
-        </fieldset>
+      <fieldset>
+        <legend>Create short URL:</legend>
+        <!-- long url -->
+        <label for="longUrl">Long url:</label> <br />
+        <input type="text" name="longUrl" placeholder="Enter long url here" />
+        <br /><br />
+        <!-- custom url -->
+        <label for="customUrl">Custom url (optional):</label> <br />
+        <input
+          type="text"
+          name="customUrl"
+          placeholder="Enter custom word here"
+        />
+        <br /><br />
+        <!-- qrcode -->
+        <label for="qrcode">Check to generate QRCode:</label>
+        <input type="checkbox" name="qrcode" /> <br /><br />
+        <!-- submit button -->
+        <button>Create</button> <br />
+        <!-- response message from server -->
+        <p class="resMsg"></p>
+        <img src="" height="100" id="qrcodeImg" alt="" />
+      </fieldset>
     </form>
 
-    <caption><h2>Link History:</h2></caption>
+    <caption>
+      <h2 id="link-history">Link History:</h2>
+    </caption>
     <table>
-        <thead>
-            <tr>
-                <th>S/N</th>
-                <th>SHORT URL</th>
-                <th>LONG URL</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% urlCollection.forEach((element, i) => { %>
-                <tr>
-                    <td> <%= 1 + i %> </td>
-                    <td> <%= element.shortUrl %> </td>
-                    <td> <%= element.longUrl %> </td>
-                </tr>
-            <% }) %>
-
-        </tbody>
+      <thead>
+        <tr>
+          <th>S/N</th>
+          <th>SHORT URL</th>
+          <th>LONG URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% urlCollection.forEach((element, i)=> { %>
+        <tr>
+          <td><%= 1 + i %></td>
+          <td><%= element.shortUrl %></td>
+          <td><%= element.longUrl %></td>
+        </tr>
+        <% }) %>
+      </tbody>
     </table>
 
-    <caption><h2>Analytics:</h2></caption>
-    <% for( let i = 0; i < urlCollection?.length; i++ ) { %>
-        <fieldset>
-            <legend>(<%= 1 + i %>). Details for: <%= urlCollection[i].shortUrl %>, Number of Clicks: <%= urlCollection[i].clicks %> </legend>
+    <caption>
+      <h2 id="analytics">Analytics:</h2>
+    </caption>
+    <% for( let i=0; i < urlCollection?.length; i++ ) { %>
+    <fieldset>
+      <legend>
+        (<%= 1 + i %>). Details for: <%= urlCollection[i].shortUrl %>, Number of
+        Clicks: <%= urlCollection[i].clicks %>
+      </legend>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>S/N</th>
-                        <th>TIME OF CLICKS (timestamp)</th>
-                        <th>BROWSER (userAgent)</th>
-                        <th>ORIGIN OF CLICKS (Referrer)</th>
-                        <th><img src="<%=urlCollection[i].qrcodeFileLocation%>" class="analyticsQrcodeImages" height="100" alt=""></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for( let j = 0; j < urlCollection[i]?.clickDetails?.length; j++ ) { %>
-                        <tr>
-                            <td><%= 1 + j %>. </td>
-                            <td><%= urlCollection[i].clickDetails[j].timestamp %> </td>
-                            <td><%= urlCollection[i].clickDetails[j].userAgent %> </td>
-                            <td><%= urlCollection[i].clickDetails[j].referrer %> </td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
-
-        </fieldset> <br>
-    <% } %>
-    
+      <table>
+        <thead>
+          <tr>
+            <th>S/N</th>
+            <th>TIME OF CLICKS (timestamp)</th>
+            <th>BROWSER (userAgent)</th>
+            <th>ORIGIN OF CLICKS (Referrer)</th>
+            <th>
+              <img
+                src="<%=urlCollection[i].qrcodeFileLocation%>"
+                class="analyticsQrcodeImages"
+                height="100"
+                alt=""
+              />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for( let j=0; j < urlCollection[i]?.clickDetails?.length; j++ ) {
+          %>
+          <tr>
+            <td><%= 1 + j %>.</td>
+            <td><%= urlCollection[i].clickDetails[j].timestamp %></td>
+            <td><%= urlCollection[i].clickDetails[j].userAgent %></td>
+            <td><%= urlCollection[i].clickDetails[j].referrer %></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </fieldset>
+    <br />
+    <% } %> // script
     <script>
-        const createUrlForm = document.querySelector('#createUrlForm');
-        const resMsg = document.querySelector('.resMsg');
-        const qrcodeImageElement = document.querySelector('#qrcodeImg');
-        analyticsQrcodeImageElements = document.querySelector('.analyticsQrcodeImages');
-        async function deleteQrcodeFetch() {
-            const res = await fetch('/api/v1/delete', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
+
+      const createUrlForm = document.querySelector("#createUrlForm");
+      const resMsg = document.querySelector(".resMsg");
+      const qrcodeImageElement = document.querySelector("#qrcodeImg");
+      analyticsQrcodeImageElements = document.querySelector(
+        ".analyticsQrcodeImages"
+      );
+      async function deleteQrcodeFetch() {
+        const res = await fetch("/api/v1/delete", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      try {
+        if (analyticsQrcodeImageElements) {
+          analyticsQrcodeImageElements.onload = deleteQrcodeFetch();
+        } else {
+          deleteQrcodeFetch();
         }
+      } catch (err) {
+        console.log(err);
+      }
+      // create URL form event listener
+      createUrlForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        resMsg.textContent = ""; // reset response message div
+        qrcodeImageElement.src = "";
         try {
-            if (analyticsQrcodeImageElements) {
-                analyticsQrcodeImageElements.onload = deleteQrcodeFetch();
-            } else {
-                deleteQrcodeFetch();
-            }
+          qrcodeImageElement.onload = async function () {
+            const res = await fetch("/api/v1/delete", {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            });
+          };
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
-        // create URL form event listener
-        createUrlForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            resMsg.textContent = '';  // reset response message div
-            qrcodeImageElement.src = '';
-            try {
-                qrcodeImageElement.onload = async function() {
-                    const res = await fetch('/api/v1/delete', {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                };
-            } catch (err) {
-                console.log(err);
-            }
-            // form input is assigned to js variables
-            const longUrl = createUrlForm.longUrl.value;
-            const customUrl = createUrlForm.customUrl.value;
-            const qrcodeRequested = createUrlForm.qrcode.checked;
-            try {
-                const res = await fetch('/api/v1/', {
-                    method: 'POST',
-                    body: JSON.stringify({ longUrl, customUrl, qrcodeRequested }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await res.json();
-                if (data.shortUrlCreated) {
-                    resMsg.textContent = data.resMsg;
-                    qrcodeImageElement.src = data.qrcodeFileLocation;
-                    return;
-                }
-                resMsg.textContent = data.errMsg;
-                qrcodeImageElement.src = '';
-            } catch (err) {
-                console.log(err);
-            }
-        })
+        // form input is assigned to js variables
+        const longUrl = createUrlForm.longUrl.value;
+        const customUrl = createUrlForm.customUrl.value;
+        const qrcodeRequested = createUrlForm.qrcode.checked;
+        try {
+          const res = await fetch("/api/v1/", {
+            method: "POST",
+            body: JSON.stringify({ longUrl, customUrl, qrcodeRequested }),
+            headers: { "Content-Type": "application/json" },
+          });
+          const data = await res.json();
+          if (data.shortUrlCreated) {
+            resMsg.textContent = data.resMsg;
+            qrcodeImageElement.src = data.qrcodeFileLocation;
+            return;
+          }
+          resMsg.textContent = data.errMsg;
+          qrcodeImageElement.src = "";
+        } catch (err) {
+          console.log(err);
+        }
+      });
     </script>
+  </div>
 </main>
 <%-include('partials/footer');-%>

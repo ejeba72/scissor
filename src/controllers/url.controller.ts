@@ -111,7 +111,7 @@ async function getDashboard(req: Request, res: Response) {
             }
             generatorFunction();
         });
-        res.status(200).render('dashboard', { urlCollection });
+        res.status(200).render('dashboard', { urlCollection, isDashboard: true });
     } catch (err: unknown) {
         res.status(500).render('500-page');
         if (err instanceof Error) return log(err.message);
@@ -137,8 +137,35 @@ async function deleteQrcodeImages(req: Request, res: Response) {
 }
 
 // update, deleteOne, deleteAll
-async function updateUrl() {}
-async function deleteUrl() {}
-async function deleteAllUrls() {}
+async function updateUrl(req: Request, res: Response) {
+    try {
+        log(`url update request`);
+        res.status(200).json({ resMsg: 'Your short url has been updated.' });
+    } catch (err: unknown) {
+        if (err instanceof Error) return log(err.message);
+        return log(err);
+        res.status(500).render('500-page');
+    }
+}
+async function deleteUrl(req: Request, res: Response) {
+    try {
+        log(`url delete request`);
+        res.status(200).json({ resMsg: 'Your short url has been deleted.' });
+    } catch (err: unknown) {
+        if (err instanceof Error) return log(err.message);
+        return log(err);
+        res.status(500).render('500-page');
+    }
+}
+async function deleteAllUrls(req: Request, res: Response) {
+    try {
+        log(`url delete request`);
+        res.status(200).json({ resMsg: 'All your short urls has been deleted.' });
+    } catch (err: unknown) {
+        if (err instanceof Error) return log(err.message);
+        return log(err);
+        res.status(500).render('500-page');
+    }
+}
 
-export { postNewShortUrl, getDashboard, deleteQrcodeImages };
+export { postNewShortUrl, getDashboard, deleteQrcodeImages, updateUrl, deleteUrl, deleteAllUrls };
