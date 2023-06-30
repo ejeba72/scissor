@@ -7,7 +7,7 @@ const router = Router();
 router.post('/', loginLogic);
 router.post('/signup', signupLogic);
 router.get('/logout', logoutLogic);
-// router.delete('/delete', verifyJwtToken, deleteUserLogic);
-router.delete('/delete', deleteUserLogic);
+router.delete('/delete', verifyJwtToken, deleteUserLogic);
+// router.delete('/delete', deleteUserLogic);
 
 export { router as userRoute };
