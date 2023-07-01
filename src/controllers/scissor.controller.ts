@@ -24,7 +24,7 @@ function success(req: Request, res: Response) {
 }
 // @route GET /scissor/404-page
 // @desc render 404-error page
-function errorPage(req: Request, res: Response) {
+function clientErrorPage(req: Request, res: Response) {
     try {
         res.status(404).render('404-page', { isDashboard: false });
     } catch (err) {
@@ -32,6 +32,17 @@ function errorPage(req: Request, res: Response) {
         if (err instanceof Error) return console.log(err.message);
         console.log(err);
     }
+}
+// @route GET /scissor/500-page
+// @desc render 500-error page
+function serverErrorPage(req: Request, res: Response) {
+  try {
+      res.status(404).render('500-page', { isDashboard: false });
+  } catch (err) {
+      res.status(500).render('500-page', { isDashboard: false });
+      if (err instanceof Error) return console.log(err.message);
+      console.log(err);
+  }
 }
 // @route GET /scissor/signup
 // @desc render signup page
@@ -56,4 +67,4 @@ function loginPage(req: Request, res: Response) {
     }
 }
 
-export { homepage, success, errorPage, signupPage, loginPage, };
+export { homepage, success, clientErrorPage, serverErrorPage, signupPage, loginPage, };

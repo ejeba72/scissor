@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { errorPage, homepage, loginPage, signupPage, success } from "../controllers/scissor.controller";
-import { verifyJwtToken } from "../middleware/auth.middleware";
+import { clientErrorPage, homepage, loginPage, serverErrorPage, signupPage, success } from "../controllers/scissor.controller";
 
 const router = Router();
 router.get('/homepage', homepage);
 router.get('/success', success);
-router.get('/404-page', errorPage)
+router.get('/404-page', clientErrorPage);
+router.get('/500-page', serverErrorPage);
 router.get('/signup', signupPage);
 router.get('/login', loginPage);
 

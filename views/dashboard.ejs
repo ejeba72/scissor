@@ -183,6 +183,7 @@
       } catch (err) {
         console.log(err);
       }
+
       // create URL form event listener
       createUrlForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -222,7 +223,6 @@
       });
 
       const deleteUrlForm = document.querySelector('#delete-url');
-      
       deleteUrlForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -242,7 +242,6 @@
       })
 
       const deleteAccountBtn = document.querySelector('#delete-account');
-
       deleteAccountBtn.addEventListener('click', async (event) => {
         try {
           const res = await fetch('/api/v1/user/delete', {
@@ -251,6 +250,7 @@
           });
           const data = await res.json();
           console.log({ data });
+          if (data.accountDeleted) return location.assign('/scissor/homepage');
         } catch (err) {
           console.log(err);
         }

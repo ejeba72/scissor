@@ -22,6 +22,7 @@ function createJwtToken(id: string): string {
 }
 async function signupLogic(req: Request, res: Response) {
   try {
+    log({ reqBody: req.body });
     if (Object.keys(req.body).length === 0)
       return res.status(400).json({ errMsg: `bad request` });
     const validatedUser = ZSignupSchema.safeParse(req.body);
@@ -57,6 +58,7 @@ async function signupLogic(req: Request, res: Response) {
 }
 async function loginLogic(req: Request, res: Response) {
   try {
+    log({ reqBody: req.body });
     if (Object.keys(req.body).length === 0)
       return res.status(400).json({ errMsg: `bad request` });
     const { emailOrUsername, password } = req.body;
@@ -95,24 +97,21 @@ async function deleteUserLogic(req: Request, res: Response) {
   try {
     log({ jwtToken: req.cookies?.jwt, JWT_SECRET_KEY });
     const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
-    // delete user's url documents in mongodb url collection and redis cache
+    // delete user's url documents in mongodb url collection and redis cache:
     const urlDocuments = await UrlModel.find({ userId });
     const redisKeys = urlDocuments.map((urlDoc) => {
       return urlDoc.shortUrl;
     });
+    // if user's url presently exists in the cache, delete it:
     if (redisKeys.length >= 1) {
       const deletedRedisKey = await redis.del(...redisKeys);
-      log({ deletedRedisKey, });
+      log({ deletedRedisKey });
     }
-    const deletedUrls = await UrlModel.deleteMany({ userId });
-    const deletedUser = await UserModel.deleteOne({ _id: userId });
+    const deletedUrls = await UrlModel.deleteMany({ userId });  // delete user's URLs
+    const deletedUser = await UserModel.deleteOne({ _id: userId });  // delete user's account
     log({ urlDocuments, redisKeys, deletedUrls, deletedUser });
-
     res.clearCookie("jwt");
-    res
-      .status(200)
-      .json({ resMsg: `Your user account has been deleted` });
-
+    res.status(200).json({ accountDeleted: true });
   } catch (err: unknown) {
     res.status(500).render("500-page");
     if (err instanceof Error) return log(err.message);
