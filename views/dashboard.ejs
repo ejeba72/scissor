@@ -38,11 +38,13 @@
         <fieldset>
           <legend>Edit short URL:</legend>
           <!-- find url -->
-          <label for="findUrl">Enter the short url you wish to edit:</label>
+          <label for="findUrlToEdit"
+            >Enter the short url you wish to edit:</label
+          >
           <br />
           <input
             type="text"
-            name="findUrl"
+            name="findUrlToEdit"
             placeholder="Enter short url here"
           />
           <br /><br />
@@ -68,8 +70,8 @@
           <!-- submit button -->
           <button>Edit URL</button> <br />
           <!-- response message from server -->
-          <p class="res-msg"></p>
-          <img src="" height="100" id="qrcode-img" alt="" />
+          <p id="edit-msg"></p>
+          <img src="" height="100" id="edited-qrcode-img" alt="" />
         </fieldset>
       </form>
 
@@ -185,30 +187,28 @@
     </div>
 
     <script>
-      const createUrlForm = document.querySelector("#create-url");
-      const resMsg = document.querySelector(".res-msg");
-      const qrcodeImageElement = document.querySelector("#qrcode-img");
-
-      window.addEventListener('load', async (event) => {
+      window.addEventListener("load", async (event) => {
         try {
           const res = await fetch("/api/v1/deleteQrcodeImg", {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" }
-          })
+            headers: { "Content-Type": "application/json" },
+          });
         } catch (err) {
           console.log(err);
         }
       });
 
-      // create-url-form event listener
+      const createUrlForm = document.querySelector("#create-url");
       createUrlForm.addEventListener("submit", async (event) => {
         event.preventDefault();
+        const resMsg = document.querySelector(".res-msg");
+        const qrcodeImageElement = document.querySelector("#qrcode-img");
         resMsg.innerText = ""; // reset response message div
         qrcodeImageElement.src = "";
         try {
           qrcodeImageElement.onload = async function () {
-            const res = await fetch("/api/v1/delete", {
-              method: "GET",
+            const res = await fetch("/api/v1/deleteQrcodeImg", {
+              method: "DELETE",
               headers: { "Content-Type": "application/json" },
             });
           };
@@ -238,13 +238,64 @@
         }
       });
 
+      const editUrlForm = document.querySelector("#edit-url");
+      editUrlForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        console.log("hello, Osakpolor");
+        const editMsg = document.querySelector("#edit-msg");
+        const editedQrcodeImageElement =
+          document.querySelector("#edited-qrcode-img");
+        editMsg.innerText = ""; // reset response message div
+        editedQrcodeImageElement.src = "";
+        try {
+          editedQrcodeImageElement.onload = async function () {
+            const res = await fetch("/api/v1/deleteQrcodeImg", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+            });
+          };
+        } catch (err) {
+          console.log(err);
+        }
+        // form input is assigned to js variables
+        const findUrlToEdit = editUrlForm.findUrlToEdit.value;
+        const longUrl = editUrlForm.longUrl.value;
+        const customUrl = editUrlForm.customUrl.value;
+        const qrcodeRequested = editUrlForm.qrcode.checked;
+        console.log({ findUrlToEdit, longUrl, customUrl, qrcodeRequested });
+        try {
+          const res = await fetch("/api/v1/update/", {
+            method: "PUT",
+            body: JSON.stringify({
+              findUrlToEdit,
+              longUrl,
+              customUrl,
+              qrcodeRequested,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+          const data = await res.json();
+          console.log({ data });
+          if (data.shortUrlEdited) {
+            editMsg.innerText = data.resMsg;
+            editedQrcodeImageElement.src = data.qrcodeFileLocation;
+            console.log({ editMsg, editedQrcodeImageElement });
+            return;
+          }
+          editMsg.innerText = data.errMsg;
+          editedQrcodeImageElement.src = "";
+        } catch (err) {
+          console.log(err);
+        }
+      });
+
       const deleteUrlForm = document.querySelector("#delete-url");
       deleteUrlForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const findUrl = deleteUrlForm.findUrl.value;
         const deleteAll = deleteUrlForm.deleteAll.checked;
-        const resMsgDelUrl = document.querySelector('#delete-message');
-        resMsgDelUrl.innerText = '';
+        const resMsgDelUrl = document.querySelector("#delete-message");
+        resMsgDelUrl.innerText = "";
         try {
           const res = await fetch("/api/v1/delete", {
             method: "DELETE",
