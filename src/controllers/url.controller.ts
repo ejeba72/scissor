@@ -10,11 +10,13 @@ import { GetPublicKeyOrSecret, Secret, verify } from "jsonwebtoken";
 import { generateUserId } from "../utils/userId.utils";
 import { readdir, unlink } from "fs/promises";
 import { error, log } from "console";
+import { Redis } from "ioredis";
 
 config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as
   | Secret
   | GetPublicKeyOrSecret;
+const redis = new Redis();
 
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>
@@ -167,25 +169,35 @@ async function updateUrl(req: Request, res: Response) {
 }
 async function deleteUrl(req: Request, res: Response) {
   try {
-    log({ reqBody: req.body });
-    // retrieve the payload from the request body
-    const { findUrl, deleteAll } = req.body;
+    log({ reqBody: req.body });  
+    const { findUrl, deleteAll } = req.body;  // retrieve the payload from the request body
     log({ findUrl, deleteAll });
-    // retrieve userId from jwt cookie
-    const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
-    // log({ userId });
+    const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);  // retrieve userId from jwt cookie
+
     if (deleteAll) {
+      const urlDocuments = await UrlModel.find({ userId });
+      console.log({ noOfUrlDocuments: urlDocuments.length });
+      if (urlDocuments.length===0) return res.status(404).json({ resMsgDelUrl: `No URL is presently associated with your account` });
+      const redisKeys = urlDocuments.map((urlDoc) => {
+        return urlDoc.shortUrl;
+      });
+      // if user's urls presently exist in Redis cache, delete it:
+      if (redisKeys.length >= 1) {
+        const deletedRedisKeys = await redis.del(...redisKeys);
+        log({ deletedRedisKeys });
+      }
       const deletedMany = await UrlModel.deleteMany({ userId });
       log({ deletedMany });
-      log(`deleted all urls`);
-      return res.status(200).json({ errMsg: `deleted all URLs` });
+      return res.status(200).json({ resMsgDelUrl: `deleted all URLs` });
     }
+    const deletedRedisKey = await redis.del(findUrl);  // delete url if it exists in Redis cache
     const deletedOne = await UrlModel.deleteOne({
       $and: [{ userId }, { shortUrl: findUrl }],
     });
-    log({ deletedOne });
-    log(`deleted one url`);
-    res.status(200).json({ resMsg: { message: `URL deleted!` } });
+    log({ deletedOne, deletedRedisKey });
+    if (deletedOne.deletedCount===0 && deletedRedisKey===0) return res.status(404).json({ resMsgDelUrl: `That URL does not exist or has already been deleted` });
+    // The if statement's condition should have been, "if (deletedOne.deletedCount===0) {}", however, i decided to go with the above condition for the sake of redundancy or what i may not have considered
+    res.status(200).json({ resMsgDelUrl: `URL deleted!` });
   } catch (err: unknown) {
     if (err instanceof Error) return log(err.message);
     return log(err);
