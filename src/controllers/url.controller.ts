@@ -206,11 +206,13 @@ async function updateUrl(req: Request, res: Response) {
 
     log({
       proposedShortUrl,
+      emptyProposedShortUrlComparism: customUrl === '',
+      emptyLongUrlComparism: longUrl === '',
       qrcodeComparism: urlToEdit.qrcodeRequested === qrcodeRequested,
     })
 
 
-    log({ ifStatementResult: (proposedShortUrl === "" &&
+    log({ ifStatementCondition: (customUrl === "" &&
     longUrl === "" &&
     urlToEdit.qrcodeRequested === qrcodeRequested) ||
   (urlToEdit.shortUrl === proposedShortUrl &&
@@ -220,15 +222,15 @@ async function updateUrl(req: Request, res: Response) {
 
 
     if (
-      (proposedShortUrl === "" &&
+      (customUrl === "" &&
         longUrl === "" &&
         urlToEdit.qrcodeRequested === qrcodeRequested) ||
       (urlToEdit.shortUrl === proposedShortUrl &&
         urlToEdit.longUrl === longUrl &&
         urlToEdit.qrcodeRequested === qrcodeRequested)
     ) {
-      log({ errMsg: `No changes to make` });
-      return res.status(404).json({ errMsg: `No changes to make` });
+      log({ errMsg: `No changes to make.` });
+      return res.status(404).json({ errMsg: `No changes to make.` });
     }
     // qrcode section
     const shortUrl = proposedShortUrl || urlToEdit.shortUrl;
