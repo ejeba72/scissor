@@ -8,7 +8,6 @@
       <h2 id="create-modify-url"><em>Create, edit, or delete url:</em></h2>
     </caption>
     <div class="forms">
-
       <form class="form-item" id="create-url">
         <fieldset>
           <legend>Create short URL:</legend>
@@ -22,13 +21,13 @@
             type="text"
             name="customUrl"
             placeholder="Enter custom word here"
-          >
-          <br><br>
+          />
+          <br /><br />
           <!-- qrcode -->
           <label for="qrcode">Check to generate QRCode:</label>
-          <input type="checkbox" name="qrcode"> <br><br>
+          <input type="checkbox" name="qrcode" /> <br /><br />
           <!-- submit button -->
-          <button>Create URL</button> <br>
+          <button>Create URL</button> <br />
           <!-- response message from server -->
           <p class="res-msg"></p>
           <img src="" height="100" id="qrcode-img" alt="" />
@@ -39,11 +38,21 @@
         <fieldset>
           <legend>Edit short URL:</legend>
           <!-- find url -->
-          <label for="findUrl">Enter the short url you wish to edit:</label> <br>
-          <input type="text" name="findUrl" placeholder="Enter short url here"> <br><br>
+          <label for="findUrl">Enter the short url you wish to edit:</label>
+          <br />
+          <input
+            type="text"
+            name="findUrl"
+            placeholder="Enter short url here"
+          />
+          <br /><br />
           <!-- long url -->
           <label for="longUrl">New long url:</label> <br />
-          <input type="text" name="longUrl" placeholder="Enter new long url here" />
+          <input
+            type="text"
+            name="longUrl"
+            placeholder="Enter new long url here"
+          />
           <br /><br />
           <!-- custom url -->
           <label for="customUrl">New custom url (optional):</label> <br />
@@ -52,15 +61,15 @@
             name="customUrl"
             placeholder="Enter custom word here"
           />
-          <br><br>
+          <br /><br />
           <!-- qrcode -->
           <label for="qrcode">Check to generate QRCode:</label>
-          <input type="checkbox" name="qrcode"> <br><br>
+          <input type="checkbox" name="qrcode" /> <br /><br />
           <!-- submit button -->
-          <button>Edit URL</button> <br>
+          <button>Edit URL</button> <br />
           <!-- response message from server -->
           <p class="res-msg"></p>
-          <img src="" height="100" id="qrcode-img" alt="">
+          <img src="" height="100" id="qrcode-img" alt="" />
         </fieldset>
       </form>
 
@@ -68,20 +77,24 @@
         <fieldset>
           <legend>Delete short URL:</legend>
           <!-- find url -->
-          <label for="findUrl">Delete one:</label> <br>
-          <input type="text" name="findUrl" placeholder="Enter short url here"> <br><br>
+          <label for="findUrl">Delete one:</label> <br />
+          <input
+            type="text"
+            name="findUrl"
+            placeholder="Enter short url here"
+          />
+          <br /><br />
 
           <!-- delete all -->
-          <label for="deleteAll">Or delete all:</label><br>
-          <input type="checkbox" name="deleteAll"><br>
+          <label for="deleteAll">Or delete all:</label><br />
+          <input type="checkbox" name="deleteAll" /><br />
 
           <!-- submit button -->
-          <button>Delete URL</button> <br>
+          <button>Delete URL</button> <br />
           <!-- response message from server -->
-          <p class="res-msg"></p>
+          <p id="delete-message"></p>
         </fieldset>
       </form>
-
     </div>
 
     <caption>
@@ -102,7 +115,7 @@
           <td><%= 1 + i %></td>
           <td><%= element.shortUrl %></td>
           <td><%= element.longUrl %></td>
-          <td><%= element.createdAt%> </td>
+          <td><%= element.createdAt%></td>
         </tr>
         <% }) %>
       </tbody>
@@ -140,9 +153,15 @@
           %>
           <tr>
             <td><%= 1 + j %>.</td>
-            <td class="column"><%= urlCollection[i].clickDetails[j].timestamp %></td>
-            <td class="column"><%= urlCollection[i].clickDetails[j].userAgent %></td>
-            <td class="column"><%= urlCollection[i].clickDetails[j].referrer %></td>
+            <td class="column">
+              <%= urlCollection[i].clickDetails[j].timestamp %>
+            </td>
+            <td class="column">
+              <%= urlCollection[i].clickDetails[j].userAgent %>
+            </td>
+            <td class="column">
+              <%= urlCollection[i].clickDetails[j].referrer %>
+            </td>
           </tr>
           <% } %>
         </tbody>
@@ -150,41 +169,38 @@
     </fieldset>
     <br />
     <% } %>
-    
+
     <div id="delete-account">
       <caption>
-        <h2><em>Delete user account:</em></h2>  
+        <h2><em>Delete user account:</em></h2>
       </caption>
-      <p>You can delete your user account here, by clicking the button below. However, please note that if you proceed, you lose all the urls you've created, as well as your link history and analytics. Also, your user account details will be deleted and you would be redirected to our homepage.</p>
+      <p>
+        You can delete your user account here, by clicking the button below.
+        However, please note that if you proceed, you lose all the urls you've
+        created, as well as your link history and analytics. Also, your user
+        account details will be deleted and you would be redirected to our
+        homepage.
+      </p>
       <button id="delete-account">Delete your account</button>
     </div>
 
-
     <script>
-
       const createUrlForm = document.querySelector("#create-url");
       const resMsg = document.querySelector(".res-msg");
       const qrcodeImageElement = document.querySelector("#qrcode-img");
-      analyticsQrcodeImageElements = document.querySelector(
-        ".analytics-qrcode-images"
-      );
-      async function deleteQrcodeFetch() {
-        const res = await fetch("/api/v1/deleteQrcodeImg", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-      try {
-        if (analyticsQrcodeImageElements) {
-          analyticsQrcodeImageElements.onload = deleteQrcodeFetch();
-        } else {
-          deleteQrcodeFetch();
-        }
-      } catch (err) {
-        console.log(err);
-      }
 
-      // create URL form event listener
+      window.addEventListener('load', async (event) => {
+        try {
+          const res = await fetch("/api/v1/deleteQrcodeImg", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+          })
+        } catch (err) {
+          console.log(err);
+        }
+      });
+
+      // create-url-form event listener
       createUrlForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         resMsg.innerText = ""; // reset response message div
@@ -222,41 +238,41 @@
         }
       });
 
-      const deleteUrlForm = document.querySelector('#delete-url');
-      deleteUrlForm.addEventListener('submit', async (event) => {
+      const deleteUrlForm = document.querySelector("#delete-url");
+      deleteUrlForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         const findUrl = deleteUrlForm.findUrl.value;
         const deleteAll = deleteUrlForm.deleteAll.checked;
+        const resMsgDelUrl = document.querySelector('#delete-message');
+        resMsgDelUrl.innerText = '';
         try {
-          const res = await fetch('/api/v1/delete', {
-            method: 'DELETE',
-            body: JSON.stringify({findUrl, deleteAll}),
-            headers: { 'Content-Type': 'application/json' },
-          });
-          const data = await res.json();
-          console.log({data});
-        } catch (err) {
-          console.log(err);
-        }
-      })
-
-      const deleteAccountBtn = document.querySelector('#delete-account');
-      deleteAccountBtn.addEventListener('click', async (event) => {
-        try {
-          const res = await fetch('/api/v1/user/delete', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+          const res = await fetch("/api/v1/delete", {
+            method: "DELETE",
+            body: JSON.stringify({ findUrl, deleteAll }),
+            headers: { "Content-Type": "application/json" },
           });
           const data = await res.json();
           console.log({ data });
-          if (data.accountDeleted) return location.assign('/scissor/homepage');
+          resMsgDelUrl.innerText = data.resMsgDelUrl;
         } catch (err) {
           console.log(err);
         }
-      })
+      });
 
-
+      const deleteAccountBtn = document.querySelector("#delete-account");
+      deleteAccountBtn.addEventListener("click", async (event) => {
+        try {
+          const res = await fetch("/api/v1/user/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          });
+          const data = await res.json();
+          console.log({ data });
+          if (data.accountDeleted) return location.assign("/scissor/homepage");
+        } catch (err) {
+          console.log(err);
+        }
+      });
     </script>
   </div>
 </main>
