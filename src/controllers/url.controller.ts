@@ -11,6 +11,7 @@ import { generateUserId } from "../utils/userId.utils";
 import { readdir, unlink } from "fs/promises";
 import { error, log } from "console";
 import { Redis } from "ioredis";
+import url from "node:url";
 
 config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as
@@ -200,41 +201,58 @@ async function updateUrl(req: Request, res: Response) {
         errMsg: "URL not found! Or may have already been modified.",
       });
     }
-    const proposedShortUrl = req.get("host") + "/" + customUrl;
 
+    let proposedShortUrl;
+    if (customUrl === "") {
+      proposedShortUrl = urlToEdit.shortUrl;
+    } else {
+      proposedShortUrl = req.get("host") + "/" + customUrl;
+    }
 
+    let proposedLongUrl;
+    if (longUrl === "") {
+      proposedLongUrl = urlToEdit.longUrl;
+    } else {
+      proposedLongUrl = longUrl;
+    }
 
     log({
       proposedShortUrl,
-      emptyProposedShortUrlComparism: customUrl === '',
-      emptyLongUrlComparism: longUrl === '',
+      proposedLongUrl,
+      urlToEditShortUrl: urlToEdit.shortUrl,
+      shortUrlComparism: proposedShortUrl === urlToEdit.shortUrl,
+      longUrlComparism: urlToEdit.longUrl === proposedLongUrl,
       qrcodeComparism: urlToEdit.qrcodeRequested === qrcodeRequested,
-    })
+    });
 
-
-    log({ ifStatementCondition: (customUrl === "" &&
-    longUrl === "" &&
-    urlToEdit.qrcodeRequested === qrcodeRequested) ||
-  (urlToEdit.shortUrl === proposedShortUrl &&
-    urlToEdit.longUrl === longUrl &&
-    urlToEdit.qrcodeRequested === qrcodeRequested) })
-
-
+    log({
+      ifStatementCondition:
+        urlToEdit.shortUrl === proposedShortUrl &&
+        urlToEdit.longUrl === proposedLongUrl &&
+        urlToEdit.qrcodeRequested === qrcodeRequested,
+    });
 
     if (
-      (customUrl === "" &&
-        longUrl === "" &&
-        urlToEdit.qrcodeRequested === qrcodeRequested) ||
-      (urlToEdit.shortUrl === proposedShortUrl &&
-        urlToEdit.longUrl === longUrl &&
-        urlToEdit.qrcodeRequested === qrcodeRequested)
+      proposedShortUrl === urlToEdit.shortUrl &&
+      proposedLongUrl === urlToEdit.longUrl &&
+      qrcodeRequested === urlToEdit.qrcodeRequested
     ) {
       log({ errMsg: `No changes to make.` });
       return res.status(404).json({ errMsg: `No changes to make.` });
     }
     // qrcode section
-    const shortUrl = proposedShortUrl || urlToEdit.shortUrl;
-    const qrcodeFileName = customUrl + ".png";
+    let urlCode;
+    if (!customUrl) {
+      urlCode = url.parse(urlToEdit.shortUrl).pathname?.split("/").pop();
+    } else {
+      urlCode = customUrl;
+    }
+
+    
+
+
+
+    const qrcodeFileName = urlCode + ".png";
     const qrcodeFilePath = join(
       __dirname,
       "..",
@@ -245,20 +263,22 @@ async function updateUrl(req: Request, res: Response) {
     );
     let qrcodeFileLocation = "";
     if (qrcodeRequested) {
-      await qrGenerator(qrcodeFilePath, shortUrl);
+      await qrGenerator(qrcodeFilePath, proposedShortUrl);
       qrcodeFileLocation = "/img/" + qrcodeFileName;
     }
     log({
-      shortUrl,
+      urlCode,
+      proposedShortUrl,
+      proposedLongUrl,
       qrcodeFileName,
       qrcodeFilePath,
       qrcodeRequested,
       qrcodeFileLocation,
     });
     // edit url section
-    urlToEdit.longUrl = longUrl || urlToEdit.longUrl;
-    urlToEdit.shortUrl = shortUrl;
-    urlToEdit.qrcodeRequested = qrcodeRequested || urlToEdit.qrcodeRequested;
+    urlToEdit.longUrl = proposedLongUrl;
+    urlToEdit.shortUrl = proposedShortUrl;
+    urlToEdit.qrcodeRequested = qrcodeRequested;
     urlToEdit.qrcodeFileLocation = qrcodeFileLocation;
 
     const editedUrl = await urlToEdit.save();
@@ -271,9 +291,9 @@ async function updateUrl(req: Request, res: Response) {
     res.status(201).json({
       qrcodeFileLocation,
       shortUrlEdited: true,
-      resMsg: `Short url updated! Short Url: "${shortUrl}", ${qrcodeResMsg(
-        qrcodeRequested
-      )}, Long url: "${longUrl}."`,
+      resMsg: `Short url updated! Short Url: "${editedUrl.shortUrl}", ${qrcodeResMsg(
+        editedUrl.qrcodeRequested
+      )}, Long url: "${editedUrl.longUrl}."`,
     });
 
     // res
