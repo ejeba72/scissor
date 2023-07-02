@@ -201,37 +201,18 @@ async function updateUrl(req: Request, res: Response) {
         errMsg: "URL not found! Or may have already been modified.",
       });
     }
-
     let proposedShortUrl;
     if (customUrl === "") {
       proposedShortUrl = urlToEdit.shortUrl;
     } else {
       proposedShortUrl = req.get("host") + "/" + customUrl;
     }
-
     let proposedLongUrl;
     if (longUrl === "") {
       proposedLongUrl = urlToEdit.longUrl;
     } else {
       proposedLongUrl = longUrl;
     }
-
-    log({
-      proposedShortUrl,
-      proposedLongUrl,
-      urlToEditShortUrl: urlToEdit.shortUrl,
-      shortUrlComparism: proposedShortUrl === urlToEdit.shortUrl,
-      longUrlComparism: urlToEdit.longUrl === proposedLongUrl,
-      qrcodeComparism: urlToEdit.qrcodeRequested === qrcodeRequested,
-    });
-
-    log({
-      ifStatementCondition:
-        urlToEdit.shortUrl === proposedShortUrl &&
-        urlToEdit.longUrl === proposedLongUrl &&
-        urlToEdit.qrcodeRequested === qrcodeRequested,
-    });
-
     if (
       proposedShortUrl === urlToEdit.shortUrl &&
       proposedLongUrl === urlToEdit.longUrl &&
@@ -247,11 +228,6 @@ async function updateUrl(req: Request, res: Response) {
     } else {
       urlCode = customUrl;
     }
-
-    
-
-
-
     const qrcodeFileName = urlCode + ".png";
     const qrcodeFilePath = join(
       __dirname,
@@ -266,27 +242,14 @@ async function updateUrl(req: Request, res: Response) {
       await qrGenerator(qrcodeFilePath, proposedShortUrl);
       qrcodeFileLocation = "/img/" + qrcodeFileName;
     }
-    log({
-      urlCode,
-      proposedShortUrl,
-      proposedLongUrl,
-      qrcodeFileName,
-      qrcodeFilePath,
-      qrcodeRequested,
-      qrcodeFileLocation,
-    });
-    // edit url section
+    // edit and save url:
     urlToEdit.longUrl = proposedLongUrl;
     urlToEdit.shortUrl = proposedShortUrl;
     urlToEdit.qrcodeRequested = qrcodeRequested;
     urlToEdit.qrcodeFileLocation = qrcodeFileLocation;
-
     const editedUrl = await urlToEdit.save();
-    log({ editedUrl });
-
     const deletedRedisKey = await redis.del(findUrlToEdit); // delete url if it exists in Redis cache
     log({ deletedRedisKey });
-
     // response to client
     res.status(201).json({
       qrcodeFileLocation,
@@ -295,13 +258,6 @@ async function updateUrl(req: Request, res: Response) {
         editedUrl.qrcodeRequested
       )}, Long url: "${editedUrl.longUrl}."`,
     });
-
-    // res
-    //   .status(200)
-    //   .json({
-    //     shortUrlEdited: true,
-    //     resMsg: "Your short url has been updated.",
-    //   });
   } catch (err: unknown) {
     if (err instanceof Error) return log(err.message);
     return log(err);
