@@ -14,8 +14,8 @@ const dotenv_1 = require("dotenv");
 const url_model_1 = require("../models/url.model");
 const ioredis_1 = require("ioredis");
 (0, dotenv_1.config)();
-const PORT = process.env.PORT;
-const redis = new ioredis_1.Redis();
+const REDIS_URI = process.env.REDIS_URI;
+const redis = new ioredis_1.Redis(REDIS_URI);
 // @route GET /
 // @desc redirects from '/' to '/scissor/homepage' (i.e the homepage)
 function homepageRedirect(req, res) {

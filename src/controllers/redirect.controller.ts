@@ -4,8 +4,8 @@ import { UrlModel } from '../models/url.model';
 import { Redis } from 'ioredis';
 
 config();
-const PORT = process.env.PORT;
-const redis = new Redis();
+const REDIS_URI = process.env.REDIS_URI;
+const redis = new Redis(REDIS_URI);
 
 // @route GET /
 // @desc redirects from '/' to '/scissor/homepage' (i.e the homepage)

@@ -21,7 +21,8 @@ const console_1 = require("console");
 (0, dotenv_1.config)();
 const expiration = 60 * 60 * 24 * 3;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-const redis = new ioredis_1.Redis();
+const REDIS_URI = process.env.REDIS_URI;
+const redis = new ioredis_1.Redis(REDIS_URI);
 function createJwtToken(id) {
     // log({ id, expiration });
     if (JWT_SECRET_KEY !== undefined) {

@@ -17,7 +17,8 @@ config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as
   | Secret
   | GetPublicKeyOrSecret;
-const redis = new Redis();
+const REDIS_URI = process.env.REDIS_URI;
+const redis = new Redis(REDIS_URI);
 
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>

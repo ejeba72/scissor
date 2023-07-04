@@ -11,7 +11,8 @@ import { log } from "console";
 config();
 const expiration: number = 60 * 60 * 24 * 3;
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
-const redis = new Redis();
+const REDIS_URI = process.env.REDIS_URI;
+const redis = new Redis(REDIS_URI);
 
 function createJwtToken(id: string): string {
   // log({ id, expiration });

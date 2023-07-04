@@ -27,7 +27,8 @@ const ioredis_1 = require("ioredis");
 const node_url_1 = __importDefault(require("node:url"));
 (0, dotenv_1.config)();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-const redis = new ioredis_1.Redis();
+const REDIS_URI = process.env.REDIS_URI;
+const redis = new ioredis_1.Redis(REDIS_URI);
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>
 function postNewShortUrl(req, res) {
