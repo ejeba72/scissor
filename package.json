@@ -11,9 +11,6 @@
     "compile": "tsc -w",
     "dev": "tsc -w & node --watch ./dist/index.js"
   },
-  "engines": {
-    "node": ">=14 15<"
-  },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
