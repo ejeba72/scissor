@@ -12,7 +12,7 @@
     "dev": "tsc -w & node --watch ./dist/index.js"
   },
   "engines": {
-    "node": ">=14.20.1"
+    "node": ">=14 15<"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
