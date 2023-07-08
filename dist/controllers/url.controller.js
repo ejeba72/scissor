@@ -27,8 +27,7 @@ const ioredis_1 = require("ioredis");
 const node_url_1 = __importDefault(require("node:url"));
 (0, dotenv_1.config)();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-const REDIS_URI = process.env.REDIS_URI;
-const redis = new ioredis_1.Redis(REDIS_URI);
+const redis = new ioredis_1.Redis();
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>
 function postNewShortUrl(req, res) {
@@ -72,13 +71,15 @@ function postNewShortUrl(req, res) {
                     urlCode = (0, shortid_1.generate)(); // @desc typical code generated: 5E7zAwSfG
                 }
                 shortUrl = req.get("host") + "/" + urlCode;
+                (0, console_1.log)({ shortUrl });
                 // qrcode section
                 const qrcodeFileName = urlCode + ".png";
                 const qrcodeFilePath = (0, path_1.join)(__dirname, "..", "..", "public", "img", qrcodeFileName);
                 let qrcodeFileLocation = "";
                 if (qrcodeRequested) {
-                    yield (0, qrcode_util_1.qrGenerator)(qrcodeFilePath, shortUrl);
+                    const generatedQrcodeImage = yield (0, qrcode_util_1.qrGenerator)(qrcodeFilePath, shortUrl);
                     qrcodeFileLocation = "/img/" + qrcodeFileName;
+                    (0, console_1.log)({ generatedQrcodeImage });
                 }
                 // retrieve userId from jwt cookie
                 const userId = (0, userId_utils_1.generateUserId)((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt, JWT_SECRET_KEY);
@@ -121,7 +122,7 @@ function getDashboard(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const userId = (0, userId_utils_1.generateUserId)((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt, JWT_SECRET_KEY);
-            // log({ userId });
+            (0, console_1.log)({ userId });
             const urlCollection = yield url_model_1.UrlModel.find({ userId });
             const qrcodeDocs = urlCollection.filter((doc) => {
                 return doc.qrcodeRequested === true;
@@ -151,7 +152,7 @@ function getDashboard(req, res) {
     });
 }
 exports.getDashboard = getDashboard;
-// @route DELETE /api/v1
+// @route DELETE /api/v1/deleteQrcodeImg
 // @desc deletes the QRCode images that have been loaded in the dashboard page
 function deleteQrcodeImages(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -162,7 +163,7 @@ function deleteQrcodeImages(req, res) {
             const deleteFilePromises = files.map((file) => (0, promises_1.unlink)((0, path_1.join)(dirPath, file)));
             yield Promise.all(deleteFilePromises);
             // log(`bad guy!`);
-            res.status(200).send(); // empty response is intentional
+            res.status(204).send(); // empty response is intentional
         }
         catch (err) {
             res.status(500).send();

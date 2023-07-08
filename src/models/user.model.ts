@@ -26,7 +26,6 @@ const UserSchema: Schema<IUserSchema, IUserModel> = new Schema<IUserSchema, IUse
         email: {
             type: String,
             required: true,
-            unique: true,
         },
         username: {
             type: String,

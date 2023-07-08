@@ -17,8 +17,7 @@ config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as
   | Secret
   | GetPublicKeyOrSecret;
-const REDIS_URI = process.env.REDIS_URI;
-const redis = new Redis(REDIS_URI);
+const redis = new Redis();
 
 // @route POST /api/v1
 // @desc create short url  Response<any, Record<string, any>>
@@ -60,6 +59,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
         urlCode = generate(); // @desc typical code generated: 5E7zAwSfG
       }
       shortUrl = req.get("host") + "/" + urlCode;
+      log({ shortUrl });
       // qrcode section
       const qrcodeFileName = urlCode + ".png";
       const qrcodeFilePath = join(
@@ -72,8 +72,9 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
       );
       let qrcodeFileLocation = "";
       if (qrcodeRequested) {
-        await qrGenerator(qrcodeFilePath, shortUrl);
+        const generatedQrcodeImage = await qrGenerator(qrcodeFilePath, shortUrl);
         qrcodeFileLocation = "/img/" + qrcodeFileName;
+        log({ generatedQrcodeImage });
       }
       // retrieve userId from jwt cookie
       const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
@@ -111,7 +112,7 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 async function getDashboard(req: Request, res: Response) {
   try {
     const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
-    // log({ userId });
+    log({ userId });
     const urlCollection = await UrlModel.find({ userId });
     const qrcodeDocs = urlCollection.filter((doc) => {
       return doc.qrcodeRequested === true;
@@ -141,7 +142,7 @@ async function getDashboard(req: Request, res: Response) {
     log(err);
   }
 }
-// @route DELETE /api/v1
+// @route DELETE /api/v1/deleteQrcodeImg
 // @desc deletes the QRCode images that have been loaded in the dashboard page
 async function deleteQrcodeImages(req: Request, res: Response) {
   try {
@@ -151,7 +152,7 @@ async function deleteQrcodeImages(req: Request, res: Response) {
     const deleteFilePromises = files.map((file) => unlink(join(dirPath, file)));
     await Promise.all(deleteFilePromises);
     // log(`bad guy!`);
-    res.status(200).send(); // empty response is intentional
+    res.status(204).send(); // empty response is intentional
   } catch (err: unknown) {
     res.status(500).send();
     if (err instanceof Error) return log(err.message);
