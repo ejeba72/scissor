@@ -25,6 +25,7 @@ const promises_1 = require("fs/promises");
 const console_1 = require("console");
 const ioredis_1 = require("ioredis");
 const node_url_1 = __importDefault(require("node:url"));
+const fs_1 = require("fs");
 (0, dotenv_1.config)();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const redis = new ioredis_1.Redis();
@@ -121,6 +122,23 @@ function getDashboard(req, res) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            // check if qrcode image directory already exist. If not create it:
+            const qrcodeDirPath = (0, path_1.join)(__dirname, "..", "..", "public", "img");
+            (0, fs_1.access)(qrcodeDirPath, (err) => {
+                if (err) {
+                    (0, fs_1.mkdir)(qrcodeDirPath, (err) => {
+                        if (err) {
+                            (0, console_1.log)(err);
+                        }
+                        else {
+                            (0, console_1.log)("qrcode image directory created successfully");
+                        }
+                    });
+                }
+                else {
+                    (0, console_1.log)("qrcode image directory already exists");
+                }
+            });
             const userId = (0, userId_utils_1.generateUserId)((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt, JWT_SECRET_KEY);
             (0, console_1.log)({ userId });
             const urlCollection = yield url_model_1.UrlModel.find({ userId });

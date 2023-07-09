@@ -12,6 +12,7 @@ import { readdir, unlink } from "fs/promises";
 import { error, log } from "console";
 import { Redis } from "ioredis";
 import url from "node:url";
+import { access, mkdir } from "fs";
 
 config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as
@@ -111,12 +112,29 @@ async function postNewShortUrl(req: Request, res: Response): Promise<unknown> {
 // @desc render dashboard page
 async function getDashboard(req: Request, res: Response) {
   try {
+    // check if qrcode image directory already exist. If not create it:
+    const qrcodeDirPath = join(__dirname, "..", "..", "public", "img");
+    access(qrcodeDirPath, (err: unknown) => {
+      if (err) {
+	      mkdir(qrcodeDirPath, (err: unknown) => {
+	        if (err) {
+		        log(err);
+	        } else {
+		        log("qrcode image directory created successfully");
+	        }
+	      });
+      } else {
+	      log("qrcode image directory already exists");
+      }
+    });
+    // verify user and then retrieve all url documents related to the verified user
     const userId = generateUserId(req.cookies?.jwt, JWT_SECRET_KEY);
     log({ userId });
     const urlCollection = await UrlModel.find({ userId });
     const qrcodeDocs = urlCollection.filter((doc) => {
       return doc.qrcodeRequested === true;
     });
+    // retrieve the shortUrl and the qrcode file path from the database documents
     const generatorParams = qrcodeDocs.map((doc) => {
       return {
         qrcodeFilePath: join(
@@ -129,6 +147,7 @@ async function getDashboard(req: Request, res: Response) {
         shortUrl: doc.shortUrl,
       };
     });
+    // generate qrcode
     generatorParams.forEach((params) => {
       async function generatorFunction() {
         await qrGenerator(params.qrcodeFilePath, params.shortUrl);
